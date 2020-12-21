@@ -9,9 +9,9 @@ public:
     void setNext(Node* next) noexcept { this->next = next; }
 
     Node* getPrev() const noexcept { return prev; }
-    Node* setPrev(Node* prev) noexcept { this->prev = prev; }
+    void setPrev(Node* prev) noexcept { this->prev = prev; }
 private:
     int data;
-    Node* next;
-    Node* prev;
+    Node* next{ nullptr };
+    Node* prev{ nullptr };
 };
