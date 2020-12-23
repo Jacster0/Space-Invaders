@@ -1,146 +1,136 @@
 #include "DoublyLinkedList.h"
 #include <iostream>
 
-DoublyLinkedList::DoublyLinkedList() noexcept {
-    head = new(std::nothrow) Node;
-    tail = new(std::nothrow) Node;
+DoublyLinkedList::DoublyLinkedList() try {
+    head = new Node;
+    tail = new Node;
 
     if (head && tail) {
         head->setNext(tail);
         head->setPrev(nullptr);
-        head->setData(0);
 
         tail->setNext(nullptr);
         tail->setPrev(head);
-        tail->setData(0);
 
-        length = 2;
+        head->setData(-1);
+        tail->setData(-1);
     }
+}
+
+catch(...) {
+    delete head;
+    delete tail;
 }
 
 DoublyLinkedList::~DoublyLinkedList() {
     Node* node = head;
     int i = 0;
 
-    while (i++ != length) {
+    if (!head) {
+        delete tail;
+        tail = nullptr;
+    }
+    while (i++ != length +2) {
         Node* old = node;
-        node = node->getNext();
+        if (node) {
+            node = node->getNext();
+        }
         delete old;
     }
 }
 
 bool DoublyLinkedList::add(Node* data, int pos) noexcept {
-    if (!data || pos < 0 || pos >= length) {
+    if (!data)
+        return false;
+    if (!head || !tail)
+        return false;
+    //special case when the list is empty
+    if (pos == 0 && length == 0) {
+        data->setNext(head->getNext());
+        data->setPrev(head);
+
+        head->setNext(data);
+        tail->setPrev(data);
+
+        length++;
+
+        return true;
+    }
+
+    if (pos < 0 || pos >= length + 1) {
         return false;
     }
 
-    else {
-        Node* node = nodeAt(pos);
-        Node* next = nullptr;
+    if (Node* current = nodeAt(pos)) {
+        data->setNext(current);
+        data->setPrev(current->getPrev());
 
-        if (node) {
-            next = node->getNext();
+        current->getPrev()->setNext(data);
+        current->setPrev(data);
 
-            data->setNext(next);
-            node->setNext(data);
-
-            data->setPrev(node);
-
-            //if next is nullptr means that data is the new tail node and thus
-            //we cannot call next->setPrev(data)
-            if (next) {
-                next->setPrev(data);
-            }
-
-            length++;
-
-            return true;
-        }
-
-        return false;
-    }
-}
-
-bool DoublyLinkedList::remove(int pos) noexcept {
-    
-    if(Node* node = nodeAt(pos)) {
-        Node* next = node->getNext();
-        Node* prev = node->getPrev(); 
-
-        //node is neither head or tail
-        if (next && prev) {
-            prev->setNext(next);
-            next->setPrev(prev);
-        }
-
-        //our node is the head
-        if (next && !prev) {
-            next->setPrev(nullptr);
-        }
-
-        //our node is the tail
-        else if (prev && !next) {
-            prev->setNext(nullptr);
-        }
-
-        --length;
-        delete node;
-        node = nullptr;
-
+        length++;
         return true;
     }
     return false;
 }
 
+bool DoublyLinkedList::remove(int pos) noexcept {
+    if (Node* nodeToBeRemoved = nodeAt(pos)) {
+        nodeToBeRemoved->getPrev()->setNext(nodeToBeRemoved->getNext());
+        nodeToBeRemoved->getNext()->setPrev(nodeToBeRemoved->getPrev());
 
-//TODO: make this exception safe 
-bool DoublyLinkedList::replace(Node* oldNode, Node* newNode) noexcept {
+        nodeToBeRemoved->setNext(nullptr);
+        nodeToBeRemoved->setPrev(nullptr);
 
-    if (oldNode && newNode) {
-        Node* oldNext = oldNode->getNext();
-        Node* oldPrev = oldNode->getPrev();
+        delete nodeToBeRemoved;
+        nodeToBeRemoved = nullptr;
 
-        newNode->setNext(oldNext);
-        newNode->setPrev(oldPrev);
-
-        //old node is neither head or tail 
-        if (oldNext && oldPrev) {
-            oldNext->setPrev(newNode);
-            oldPrev->setNext(newNode);
-        }
-
-        //old node is head
-        if (oldNext && !oldPrev) {
-            oldNext->setPrev(newNode);
-        }
-
-        //old node is head
-        if (oldPrev && !oldNext) {
-            oldPrev->setNext(newNode);
-        }
-
-        delete oldNode;
-        oldNode = nullptr;
-
-        return true; 
+        length--;
+        return true;
     }
-    
+    return false;
+}
+
+bool DoublyLinkedList::replace(Node* oldNode, Node* newNode) noexcept {
+    if (oldNode && newNode) {
+        if (oldNode->getNext() && oldNode->getPrev()) {
+            auto index = search(oldNode);
+            if (index != -1) {
+                Node* node = newNode;
+                //If the newNode already exists in the list, the list will have the newNode point
+                //to it self, which will cause the display methods to enter an infinite loop.
+                //to solve this we create a entirely new node and just copy the newNode's data 
+                if (search(newNode) != -1) {
+                    node = new Node;
+                    node->setData(newNode->getData());
+                }
+                add(node, index);
+                remove(index+1);
+                
+                return true;
+            }
+        }
+        return false;
+    }
     return false;
 }
 
 int DoublyLinkedList::search(Node* data) noexcept {
     for (int i = 0; i < length; i++) {
-        Node* node = nodeAt(i);
-
-        if (node->getData() == data->getData()) {
-            return i;
+        if (Node* node = nodeAt(i)) {
+            if (node == data) {
+                return i;
+            }
         }
     }
     return -1;
 }
 
 Node* DoublyLinkedList::nodeAt(int pos) noexcept {
-    Node* node = head;
+    if (!head)
+        return nullptr;
+    Node* node = head->getNext();
+
     int i = 0;
 
     if (pos < 0 || pos >= length) {
@@ -161,18 +151,38 @@ void DoublyLinkedList::display_forward() const noexcept {
     Node* node = head;
 
     while (node != nullptr) {
-        std::cout << node->getData() << std::endl;
+        if (node == head) {
+            node = node->getNext();
+            continue;
+        }
+
+        else if (node == tail) {
+            break;
+        }
+
+        std::cout << node->getData() << " ";
         node = node->getNext();
     }
+    std::cout << std::endl;
 }
 
 void DoublyLinkedList::display_backward() const noexcept {
     Node* node = tail;
 
     while (node != nullptr) {
-        std::cout << node->getData() << std::endl;
+        if (node == tail) {
+            node = node->getPrev();
+            continue;
+        }
+
+        else if (node == head) {
+            break;
+        }
+        std::cout << node->getData() << " ";
         node = node->getPrev();
     }
+
+    std::cout << std::endl;
 }
 
 int DoublyLinkedList::size() const noexcept {
