@@ -5,16 +5,15 @@ DoublyLinkedList::DoublyLinkedList() try {
     head = new Node;
     tail = new Node;
 
-    if (head && tail) {
-        head->setNext(tail);
-        head->setPrev(nullptr);
+    head->setNext(tail);
+    head->setPrev(nullptr);
 
-        tail->setNext(nullptr);
-        tail->setPrev(head);
+    tail->setNext(nullptr);
+    tail->setPrev(head);
 
-        head->setData(-1);
-        tail->setData(-1);
-    }
+    head->setData(-1);
+    tail->setData(-1);
+    
 }
 
 catch(...) {
