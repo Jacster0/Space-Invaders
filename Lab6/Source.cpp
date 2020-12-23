@@ -34,12 +34,18 @@ int main() {
 
             //try to remove an item out of bounds
             if (!dll.remove(24)) {
-                std::cout << "Error: could not remove item from list" << std::endl;
+                std::cout << "Error: could not remove node from list" << std::endl;
+            }
+            else {
+                std::cout << "node removed from list" << std::endl;
             }
 
             //try to remove an item in bounds
             if (!dll.remove(2)) {
-                std::cout << "Error: could not remove item from list" << std::endl;
+                std::cout << "Error: could not remove node from list" << std::endl;
+            }
+            else {
+                std::cout << "node removed from list" << std::endl;
             }
 
             //print the list
@@ -49,25 +55,37 @@ int main() {
             if (!dll.add(node1, 7)) {
                 std::cout << "Error: could not add node to list" << std::endl;
             }
+            else {
+                std::cout << "Added node to list" << std::endl;
+            }
             //acutally add node1 to the list
             if (!dll.add(node1, 1)) {
                 std::cout << "Error: could not add node to list" << std::endl;
             }
+            else {
+                std::cout << "Added node to list" << std::endl;
+            }
 
             //print the list
-            dll.display_forward();
+            PrintList(dll, Direction::Forward);
 
             //replace node1 with node2
             if (!dll.replace(node1, node2)) {
                 std::cout << "Error: could not replace nodes" << std::endl;
             }
+            else {
+                std::cout << "Replaced nodes" << std::endl;
+            }
 
             //print the list
-            dll.display_forward();
+            PrintList(dll, Direction::Forward);
 
             //try to replace a node that does not exist in the list
             if (!dll.replace(node1, node2)) {
                 std::cout << "Error: could not replace nodes" << std::endl;
+            }
+            else {
+                std::cout << "Replaced nodes" << std::endl;
             }
 
             //replace the last node with node2
@@ -75,8 +93,11 @@ int main() {
                 if (!dll.replace(node, node2)) {
                     std::cout << "Error: could not replace nodes" << std::endl;
                 }
+                else {
+                    std::cout << "Replaced nodes" << std::endl;
+                }
                 //print the list
-                dll.display_forward();
+                PrintList(dll, Direction::Forward);
             }
             else {
                 std::cout << "Error: could not find node" << std::endl;
