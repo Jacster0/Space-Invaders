@@ -1,76 +1,139 @@
 #include "DoublyLinkedList.h"
 #include <iostream>
+#include <vector>
+
+enum class Direction {Forward, Backward};
+
+void CreateNodeArray(std::vector<Node*>& vec, int numberOfNodes);
+void PrintList(const DoublyLinkedList& dll, Direction direction);
 
 int main() {
+    std::vector<Node*> nodeVector;
+    Node* node1 = new(std::nothrow) Node;
+    Node* node2 = new (std::nothrow)Node;
+
+    if(node1)
+        node1->setData(1024);
+    if(node2)
+        node2->setData(2048);
+    try 
     {
-        DoublyLinkedList list;
-        Node* node1 = new Node;
-        node1->setData(52);
+        {
+            DoublyLinkedList dll;
+            //create some nodes and add it to the list
+            CreateNodeArray(nodeVector, 4);
+            for (int i = 0; i < nodeVector.size(); i++) {
+                if (!dll.add(nodeVector[i], 0)) {
+                    std::cout << "Error: could not add node to list" << std::endl;
+                }
+            }
 
-        Node* node2 = new Node;
-        node2->setData(103);
+            //print the list
+            PrintList(dll, Direction::Forward);
+            PrintList(dll, Direction::Backward);
 
-        Node* node3 = new Node;
-        node3->setData(500);
+            //try to remove an item out of bounds
+            if (!dll.remove(24)) {
+                std::cout << "Error: could not remove item from list" << std::endl;
+            }
 
-        Node* node4 = new Node;
-        node4->setData(1478);
+            //try to remove an item in bounds
+            if (!dll.remove(2)) {
+                std::cout << "Error: could not remove item from list" << std::endl;
+            }
 
-        Node* node5 = new Node;
-        node5->setData(256);
+            //print the list
+            PrintList(dll, Direction::Forward);
 
-        Node* node6 = new Node;
-        node6->setData(512);
+            //try to add node1 to an index out of bounds
+            if (!dll.add(node1, 7)) {
+                std::cout << "Error: could not add node to list" << std::endl;
+            }
+            //acutally add node1 to the list
+            if (!dll.add(node1, 1)) {
+                std::cout << "Error: could not add node to list" << std::endl;
+            }
 
-        list.add(node1, 0);
-        list.add(node2, 1);
-        list.add(node5, 1);
+            //print the list
+            dll.display_forward();
 
-        std::cout << "DISPLAYING FORWARD: " << std::endl;
-        list.display_forward();
-        std::cout << std::endl;
-        std::cout << "DISPLAYING BACKWARD: " << std::endl;
-        list.display_backward();
+            //replace node1 with node2
+            if (!dll.replace(node1, node2)) {
+                std::cout << "Error: could not replace nodes" << std::endl;
+            }
 
-        std::cout << "\nPRINT SIZE: " << std::endl;
-        std::cout << list.size() << std::endl;
-        list.remove(1);
-        std::cout << "\nPRINT SIZE AFTER REMOVAL: " << std::endl;
-        std::cout << list.size() << std::endl;
+            //print the list
+            dll.display_forward();
 
-        std::cout << std::endl;
+            //try to replace a node that does not exist in the list
+            if (!dll.replace(node1, node2)) {
+                std::cout << "Error: could not replace nodes" << std::endl;
+            }
 
-        std::cout << "DISPLAYING FORWARD: " << std::endl;
-        list.display_forward();
+            //replace the last node with node2
+            if (auto node = dll.nodeAt(dll.size() - 1)) {
+                if (!dll.replace(node, node2)) {
+                    std::cout << "Error: could not replace nodes" << std::endl;
+                }
+                //print the list
+                dll.display_forward();
+            }
+            else {
+                std::cout << "Error: could not find node" << std::endl;
+            }
 
-        std::cout << std::endl;
+            //print the data of the first node
+            if (auto node = dll.nodeAt(0)) {
+                std::cout << node->getData() << std::endl;
+            }
+            else {
+                std::cout << "Could not find node" << std::endl;
+            }
 
-        list.replace(node2, node3);
-        std::cout << "DISPLAYING FORWARD AFTER REPLACE: " << std::endl;
-        list.display_forward();
+            auto index = dll.search(nodeVector[0]);
+            //print the index of some node if it exists
+            if (index != -1) {
+                std::cout << index << std::endl;
+            }
+            else {
+                std::cout << "Could not find node" << std::endl;
+            }
 
-        std::cout << "\nPRINT INDEX OF A GIVEN NODE (IF IT EXISTS): " << std::endl;
-        std::cout << list.search(node3) << std::endl;
-        std::cout << list.search(node4) << std::endl;
-
-        std::cout << std::endl;
-
-        list.add(node4, 2);
-        std::cout << "DISPLAYING FORWARD AFTER ADD: " << std::endl;
-        list.display_forward();
-        std::cout << std::endl;
-        std::cout << "\nDISPLAYING BACKWARD AFTER ADD: " << std::endl;
-        list.display_backward();
-
-        list.add(node6, 4);
-        std::cout << "\nDISPLAYING FORWARD AFTER ADD: " << std::endl;
-        list.display_forward();
-
-        list.remove(5);
-        std::cout << "\nDISPLAYING FORWARD AFTER REMOVING TAIL: " << std::endl;
-        list.display_forward();
+            //print the size of the list
+            std::cout << dll.size() << std::endl;
+        }
     }
-   
+
+    catch (...) {
+        for (auto node : nodeVector) {
+            delete node;
+        }
+        delete node1;
+        delete node2;
+    }
+
     std::cin.get();
     return 0;
+}
+
+void CreateNodeArray(std::vector<Node*>& vec, int numberOfNodes) {
+    for (int i = 0; i < numberOfNodes; i++) {
+        Node* node = new(std::nothrow) Node;
+
+        if(node)
+            node->setData(i + 1 << 2);
+
+        vec.push_back(node);
+    }
+}
+
+void PrintList(const DoublyLinkedList& dll, Direction direction) {
+    if (direction == Direction::Forward) {
+        std::cout << "Printing list forward: ";
+        dll.display_forward();
+    }
+    else if (direction == Direction::Backward) {
+        std::cout << "Printing list backward: ";
+        dll.display_backward();
+    }
 }
