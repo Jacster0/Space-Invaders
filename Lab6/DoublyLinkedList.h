@@ -3,7 +3,7 @@
 
 class DoublyLinkedList {
 public:
-    DoublyLinkedList() noexcept;
+    DoublyLinkedList();
     ~DoublyLinkedList();
 
     bool add(Node* data, int pos) noexcept;
@@ -15,7 +15,7 @@ public:
     void display_backward() const noexcept;
     int size() const noexcept;
 private:
-    Node* head;
-    Node* tail;
-    int length{ 0 };
+    Node* head{ nullptr };
+    Node* tail{ nullptr };
+    int length{0};
 };
