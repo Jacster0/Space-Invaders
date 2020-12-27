@@ -1,5 +1,5 @@
 #include "Circle.h"
-#include "SDL.h"
+#include "Renderer.h"
 #include <iostream>
 
 Circle::Circle(Point2D point, int radius)
@@ -20,7 +20,7 @@ void Circle::SetRadius(int value) {
     radius = value;
 }
 
-void Circle::render(SDL_Renderer* renderer) {
+void Circle::render(Renderer* renderer) {
     std::cout << "Circle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -28,7 +28,7 @@ void Circle::render(SDL_Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    SDL_SetRenderDrawColor(renderer, GetRed(), GetGreen(), GetBlue(), GetAlpha());
+    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
 
     int theta = 0;
 
@@ -39,7 +39,7 @@ void Circle::render(SDL_Renderer* renderer) {
         int screenPosX = x + pt.x;
         int screenPosY = y + pt.y;
 
-        SDL_RenderDrawLine(renderer, screenPosX, screenPosY, screenPosX, screenPosY);
+        renderer->DrawLine(Point2D(screenPosX, screenPosY), Point2D(screenPosX, screenPosY));       
     }
 }
 

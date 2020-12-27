@@ -1,5 +1,5 @@
 #include "Rectangle.h"
-#include "SDL.h"
+#include "Renderer.h"
 #include <iostream>
 
 Rectangle::Rectangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int width, int height)
@@ -33,7 +33,7 @@ void Rectangle::SetHeight(int value) {
     height = value;
 }
 
-void Rectangle::render(SDL_Renderer* renderer) {
+void Rectangle::render(Renderer* renderer) {
     std::cout << "Rectangle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -42,8 +42,7 @@ void Rectangle::render(SDL_Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    SDL_SetRenderDrawColor(renderer, GetRed(), GetGreen(), GetBlue(), GetAlpha());
-
+    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
     //calculate the start and end screen coords
     int startX = pt.x;
     int endX = pt.x + width;
@@ -53,10 +52,10 @@ void Rectangle::render(SDL_Renderer* renderer) {
 
     //draw the outline of the shape
     //Horizontal lines
-    SDL_RenderDrawLine(renderer, startX, startY, endX, startY);
-    SDL_RenderDrawLine(renderer, startX, endY, endX, endY);
-
+    renderer->DrawLine(Point2D(startX, startY), Point2D(endX, endY));
+    renderer->DrawLine(Point2D(startX, endY), Point2D(endX, endY));
+   
     //vertical lines
-    SDL_RenderDrawLine(renderer, startX, startY, startX, endY);
-    SDL_RenderDrawLine(renderer, endX, startY, endX, endY);
+    renderer->DrawLine(Point2D(startX, startY), Point2D(startX, endY));
+    renderer->DrawLine(Point2D(endX, startY), Point2D(endX, endY));
 }

@@ -1,5 +1,5 @@
 #include "Triangle.h"
-#include "SDL.h"
+#include "Renderer.h"
 #include <iostream>
 
 Triangle::Triangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int base, int height)
@@ -34,7 +34,7 @@ void Triangle::SetHeight(int value) {
     height = value;
 }
 
-void Triangle::render(SDL_Renderer* renderer) {
+void Triangle::render(Renderer* renderer) {
     std::cout << "Triangle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -43,7 +43,7 @@ void Triangle::render(SDL_Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    SDL_SetRenderDrawColor(renderer, GetRed(), GetGreen(), GetBlue(), GetAlpha());
+    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
 
     //calculate the start and end screen coords
     int startX = pt.x;
@@ -55,9 +55,9 @@ void Triangle::render(SDL_Renderer* renderer) {
     int startY = pt.y;
     int endY = pt.y + height;
     //Draw the base
-    SDL_RenderDrawLine(renderer, startX, startY, endX, startY);
+    renderer->DrawLine(Point2D(startX, startY), Point2D(endX, startY));
 
     //Draw the diagonal lines
-    SDL_RenderDrawLine(renderer, pt.x, startY, middle, endY);
-    SDL_RenderDrawLine(renderer, middle, endY, endX, startY);
+    renderer->DrawLine(Point2D(pt.x, startY), Point2D(middle, endY));
+    renderer->DrawLine(Point2D(middle, endY), Point2D(endX, startY));
 }
