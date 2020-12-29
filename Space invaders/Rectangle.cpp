@@ -1,12 +1,14 @@
 #include "Rectangle.h"
 #include "Renderer.h"
+#include "SDL.h"
 #include <iostream>
 
-Rectangle::Rectangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int width, int height)
+Rectangle::Rectangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int width, int height, std::shared_ptr<Renderer> renderer)
     :
     Shape(point, r, g, b, a),
     width(width),
-    height(height)
+    height(height),
+    m_renderer(renderer)
 {}
 
 int Rectangle::GetWidth() const {
@@ -33,7 +35,7 @@ void Rectangle::SetHeight(int value) {
     height = value;
 }
 
-void Rectangle::render(Renderer* renderer) {
+void Rectangle::render(RenderFlags renderFlags) {
     std::cout << "Rectangle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -42,7 +44,7 @@ void Rectangle::render(Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
+    m_renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
     //calculate the start and end screen coords
     int startX = pt.x;
     int endX = pt.x + width;
@@ -50,12 +52,31 @@ void Rectangle::render(Renderer* renderer) {
     int startY = pt.y;
     int endY = pt.y + height;
 
-    //draw the outline of the shape
-    //Horizontal lines
-    renderer->DrawLine(Point2D(startX, startY), Point2D(endX, endY));
-    renderer->DrawLine(Point2D(startX, endY), Point2D(endX, endY));
-   
-    //vertical lines
-    renderer->DrawLine(Point2D(startX, startY), Point2D(startX, endY));
-    renderer->DrawLine(Point2D(endX, startY), Point2D(endX, endY));
+    SDL_Rect rect;
+    rect.x = startX;
+    rect.y = startY;
+    rect.w = width;
+    rect.h = height;
+
+    if ((renderFlags & RenderFlag::Fill) == RenderFlag::Fill) {
+        m_renderer->FillShape([&]() {SDL_RenderFillRect(m_renderer->GetSDLRenderer(), &rect); });
+    }
+    if ((renderFlags & RenderFlag::OutLine) == RenderFlag::OutLine) {
+        
+        //If we are also drawing a filled shape, draw the outline with the inverted color
+        if ((renderFlags & RenderFlag::Fill) == RenderFlag::Fill) {
+            m_renderer->SetColor(~GetRed(), ~GetGreen(), ~GetBlue(), GetAlpha());
+        }
+
+        //draw the outline of the shape
+        //Horizontal lines
+        m_renderer->DrawOutLine([&]() {
+            m_renderer->DrawLine(Point2D(startX, startY), Point2D(endX, startY));
+            m_renderer->DrawLine(Point2D(startX, endY), Point2D(endX, endY));
+
+            //vertical lines
+            m_renderer->DrawLine(Point2D(startX, startY), Point2D(startX, endY));
+            m_renderer->DrawLine(Point2D(endX, startY), Point2D(endX, endY));
+            });
+    }
 }
