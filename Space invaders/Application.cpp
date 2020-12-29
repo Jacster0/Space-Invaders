@@ -61,6 +61,9 @@ void Application::HandleKeyStrokes() {
         case SDLK_LEFT:
             m_defender->Move(-speedFactor);
             break;
+        case SDLK_SPACE:
+            m_defender->Shoot();
+            break;
         }
     }
 }
