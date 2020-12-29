@@ -3,6 +3,8 @@
 #include <cstdint>
 
 //Using forward declarations to keep the header files clean
+enum RenderFlag;
+using RenderFlags = int32_t;
 class Renderer;
 class Shape {
 public:
@@ -19,7 +21,7 @@ public:
     void SetBlue(uint8_t value);
     void SetPoint(Point2D point);
 public:
-    virtual void render(Renderer* renderer) = 0;
+    virtual void render(RenderFlags renderFLags) = 0;
 private:
     Point2D point;
     int color;

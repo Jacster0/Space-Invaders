@@ -20,7 +20,7 @@ void Circle::SetRadius(int value) {
     radius = value;
 }
 
-void Circle::render(Renderer* renderer) {
+void Circle::render(RenderFlags renderFlags) {
     std::cout << "Circle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -28,7 +28,7 @@ void Circle::render(Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
+    m_renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
 
     int theta = 0;
 
@@ -39,7 +39,7 @@ void Circle::render(Renderer* renderer) {
         int screenPosX = x + pt.x;
         int screenPosY = y + pt.y;
 
-        renderer->DrawLine(Point2D(screenPosX, screenPosY), Point2D(screenPosX, screenPosY));       
+        m_renderer->DrawLine(Point2D(screenPosX, screenPosY), Point2D(screenPosX, screenPosY));
     }
 }
 

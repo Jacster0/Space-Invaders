@@ -34,7 +34,7 @@ void Triangle::SetHeight(int value) {
     height = value;
 }
 
-void Triangle::render(Renderer* renderer) {
+void Triangle::render(RenderFlags renderFlags) {
     std::cout << "Triangle" << std::endl;
     std::cout << "Position:" << std::endl;
     std::cout << GetPoint().to_string() << std::endl;
@@ -43,7 +43,7 @@ void Triangle::render(Renderer* renderer) {
 
     Point2D pt = GetPoint();
     //set the color
-    renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
+    m_renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
 
     //calculate the start and end screen coords
     int startX = pt.x;
@@ -55,9 +55,9 @@ void Triangle::render(Renderer* renderer) {
     int startY = pt.y;
     int endY = pt.y + height;
     //Draw the base
-    renderer->DrawLine(Point2D(startX, startY), Point2D(endX, startY));
+    m_renderer->DrawLine(Point2D(startX, startY), Point2D(endX, startY));
 
     //Draw the diagonal lines
-    renderer->DrawLine(Point2D(pt.x, startY), Point2D(middle, endY));
-    renderer->DrawLine(Point2D(middle, endY), Point2D(endX, startY));
+    m_renderer->DrawLine(Point2D(pt.x, startY), Point2D(middle, endY));
+    m_renderer->DrawLine(Point2D(middle, endY), Point2D(endX, startY));
 }
