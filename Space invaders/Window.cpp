@@ -12,13 +12,13 @@ Window* Window::Create(int width, int height) {
 }
 
 void Window::Destroy() {
-    SDL_DestroyWindow(m_instance->m_window);
+    SDL_DestroyWindow(m_instance->m_windowSDL);
     m_instance->~Window();
     m_instance = nullptr;
 }
 
 void Window::Show() noexcept {
-    SDL_ShowWindow(m_window);
+    SDL_ShowWindow(m_windowSDL);
 }
 
 Window::Window(int width, int height)
@@ -26,5 +26,5 @@ Window::Window(int width, int height)
     m_width(width),
     m_height(height)
 {
-    m_window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_width, m_height, SDL_WINDOW_HIDDEN);
+    m_windowSDL = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_width, m_height, SDL_WINDOW_HIDDEN);
 }
