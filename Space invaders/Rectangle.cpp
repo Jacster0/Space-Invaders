@@ -3,7 +3,7 @@
 #include "SDL.h"
 #include <iostream>
 
-Rectangle::Rectangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int width, int height, std::shared_ptr<Renderer> renderer)
+Rectangle::Rectangle(Point2D point, uint8_t r, uint8_t g, uint8_t b, uint8_t a, int width, int height, const std::shared_ptr<Renderer>& renderer)
     :
     Shape(point, r, g, b, a),
     width(width),
