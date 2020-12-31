@@ -14,7 +14,8 @@ Application::Application()  {
     m_renderer->Clear();
 
     m_defender = std::make_unique<Defender>(m_renderer);
-    m_invader  = std::make_unique<Invader>(m_renderer);
+
+    m_invManger = InvaderManager(m_renderer, 25, 25);
 }
 
 Application::~Application() {
@@ -30,8 +31,6 @@ int Application::Run() {
                 return static_cast<int>(SDL_QUIT);
             }
         }
-
-        ProcessInput();
         
         Update();
         Render();
@@ -43,15 +42,17 @@ void Application::ProcessInput() {
 }
 
 void Application::Update() {
-    m_invader->Move();
-   
+    ProcessInput();
+
+    m_invManger.Move();
+
     m_renderer->SetColor(0, 0, 0,255);
     m_renderer->Clear();
 }
 
 void Application::Render() {
     m_defender->Draw();
-    m_invader->Draw();
+    m_invManger.Show();
     m_renderer->Present();
 }
 

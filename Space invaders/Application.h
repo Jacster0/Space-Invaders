@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "Invader.h"
 #include "Projectile.h"
+#include "InvaderManager.h"
 #include <chrono>
 
 class Renderer;
@@ -22,7 +23,7 @@ private:
     std::shared_ptr<Renderer> m_renderer;
 
     std::unique_ptr<Defender> m_defender;
-    std::unique_ptr<Invader>  m_invader;
 
+    InvaderManager m_invManger;
     static constexpr float speed = 4;
 };
