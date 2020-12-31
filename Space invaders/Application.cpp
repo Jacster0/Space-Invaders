@@ -9,11 +9,12 @@ Application::Application()  {
     Window* wnd = Window::Create();
     wnd->Show();
 
-    m_renderer = std::make_shared<Renderer>(*wnd);
-    m_renderer->SetColor(0, 255, 0, 255);
+    m_renderer = std::make_shared<Renderer>(*wnd,0, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    m_renderer->SetColor(0, 0, 0, 255);
     m_renderer->Clear();
 
     m_defender = std::make_unique<Defender>(m_renderer);
+    m_invader  = std::make_unique<Invader>(m_renderer);
 }
 
 Application::~Application() {
@@ -21,49 +22,50 @@ Application::~Application() {
     SDL_Quit();
 }
 
-std::optional<int> Application::Run() {
+int Application::Run() {
     while (true) {
-        SDL_WaitEvent(&m_event);
-
-        if (ProcessInput()) {
-            break;
+        SDL_Event sdlEvent;
+        while (SDL_PollEvent(&sdlEvent)) {
+            if (sdlEvent.type == SDL_QUIT) {
+                return static_cast<int>(SDL_QUIT);
+            }
         }
-
+        ProcessInput();
+        
         Update();
         Render();
     }
-    return {};
+    return 0;
 }
-
-std::optional<int> Application::ProcessInput() {
+void Application::ProcessInput() {
     HandleKeyStrokes();
-
-    return {};
 }
 
 void Application::Update() {
-    m_renderer->SetColor(0, 255, 0,255);
+    m_invader->Move();
+   
+    m_renderer->SetColor(0, 0, 0,255);
     m_renderer->Clear();
 }
 
 void Application::Render() {
     m_defender->Draw();
+    m_invader->Draw();
     m_renderer->Present();
 }
 
 void Application::HandleKeyStrokes() {
-    switch (m_event.type) {
-    case SDL_KEYDOWN:
-        switch (m_event.key.keysym.sym) {
-        case SDLK_RIGHT:
-            m_defender->Move(speedFactor);
-            break;
-        case SDLK_LEFT:
-            m_defender->Move(-speedFactor);
-            break;
-        case SDLK_SPACE:
-            m_defender->Shoot();
-            break;
-        }
+    const Uint8* state = SDL_GetKeyboardState(nullptr);
+
+    if (state[SDL_SCANCODE_RIGHT]) {
+        m_defender->Move(static_cast<int>(speed));
+    }
+
+    if (state[SDL_SCANCODE_LEFT]) {
+        m_defender->Move(static_cast<int>(-speed));
+    }
+    
+    if (state[SDL_SCANCODE_SPACE]) {
+        m_defender->Shoot();
     }
 }
