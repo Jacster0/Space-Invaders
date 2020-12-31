@@ -146,6 +146,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Defender.cpp" />
+    <ClCompile Include="Invader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="Projectile.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Defender.h" />
+    <ClInclude Include="Invader.h" />
     <ClInclude Include="Point2D.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Rectangle.h" />

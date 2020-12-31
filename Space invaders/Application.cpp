@@ -30,6 +30,7 @@ int Application::Run() {
                 return static_cast<int>(SDL_QUIT);
             }
         }
+
         ProcessInput();
         
         Update();
