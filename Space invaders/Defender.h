@@ -9,9 +9,10 @@ public:
     Defender(const std::shared_ptr<Renderer>& renderer);
     void Move(int speed);
     void Draw();
-    void Shoot();
+    void Shoot() noexcept;
 private:
-    std::unique_ptr<Projectile> m_projectile;
     Rectangle rect;
+    std::unique_ptr<Projectile> m_projectile;
     std::shared_ptr<Renderer> m_renderer;
+    bool projectileIsLaunched = false;
 };
