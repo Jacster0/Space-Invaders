@@ -6,9 +6,10 @@
 class Renderer;
 class Projectile {
 public:
-    Projectile(int posX, const std::shared_ptr<Renderer>& renderer);
+    Projectile(float posX, const std::shared_ptr<Renderer>& renderer);
     void Move(int speed);
     void Draw();
+    void SetXPos(float pos) noexcept;
 private:
     Rectangle m_rect;
 };
