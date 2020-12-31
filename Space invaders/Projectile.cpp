@@ -2,9 +2,9 @@
 #include "Renderer.h"
 #include <algorithm>
 
-Projectile::Projectile(float posX, const std::shared_ptr<Renderer>& renderer)
+Projectile::Projectile(float posX, float posY, const std::shared_ptr<Renderer>& renderer)
     :
-    m_rect({ posX,550 }, 255, 0, 0, 255, 2, 25, renderer)
+    m_rect({ posX,posY }, 255, 0, 0, 255, 2, 25, renderer)
 {
 }
 
