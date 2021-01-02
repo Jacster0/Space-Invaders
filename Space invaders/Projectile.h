@@ -10,6 +10,7 @@ public:
     void Move(int speed);
     void Draw();
     void SetXPos(float pos) noexcept;
+    Rectangle& GetRectangle() { return m_rect; }
 private:
     Rectangle m_rect;
 };
