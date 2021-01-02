@@ -3,8 +3,10 @@
 class SDL_Window;
 class Window {
 public:
-    static Window* Create(int width = 800, int height = 600);
+    static Window* Create();
     static void Destroy();
+    static int GetWidth() noexcept  { return m_width; };
+    static int GetHeight() noexcept { return m_height; }
     void Show() noexcept; 
     SDL_Window* GetSDLWindow() const { return m_windowSDL; }
 private:
@@ -15,6 +17,6 @@ private:
 
     static Window* m_instance;
     SDL_Window* m_windowSDL;
-    int m_width;
-    int m_height;
+    static constexpr int m_width = 800;
+    static constexpr int m_height = 600;
 };
