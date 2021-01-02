@@ -4,7 +4,7 @@
 
 Projectile::Projectile(float posX, float posY, const std::shared_ptr<Renderer>& renderer)
     :
-    m_rect({ posX,posY }, 255, 0, 0, 255, 2, 25, renderer)
+    m_rect({ posX,posY }, 255, 0, 0, 255, 2, 15, renderer)
 {
 }
 
