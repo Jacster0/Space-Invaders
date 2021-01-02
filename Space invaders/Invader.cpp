@@ -3,9 +3,10 @@
 
 #include <algorithm>
 
-Invader::Invader(const std::shared_ptr<Renderer>& renderer)
+Invader::Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord)
     :
-    m_rect({30,30}, 255,255,255,255, 25,25, renderer)
+    m_rect({ xCoord,yCoord }, 255,255,255,255, width, height, renderer),
+    m_projectile(std::make_unique<Projectile>(xCoord, yCoord, renderer))
 {
 }
 
@@ -19,6 +20,7 @@ void Invader::Draw() {
     }
 }
 
+//Moves the invader in X direction
 void Invader::Move() {
     int oldX = m_rect.GetPoint().x;
     float screenCoordMax = 800.0f - m_rect.GetWidth();
@@ -32,17 +34,34 @@ void Invader::Move() {
     }
    
     //clamp the x position inside our screen coords
-    newLoc.x = std::clamp(newLoc.x, 0.0f, 800.0f - screenCoordMax);
+    newLoc.x = std::clamp(newLoc.x, 0.0f, screenCoordMax);
     m_rect.SetPoint(newLoc);
+}
 
-    //Change direction of the Invader if it has hit any of the screens border
-    if (newLoc.x == 800 - m_rect.GetWidth() || newLoc.x == 0) {
-        ToggleDirection();
-    }
+//Moves the Invader in Y direction
+void Invader::MoveY() {
+    int oldX = m_rect.GetPoint().y;
+    float screenCoordMin = 600 - m_rect.GetHeight();
+    Point2D newLoc = m_rect.GetPoint();
+
+    newLoc.y += speedY;
+   
+    //clamp the y position inside our screen coords
+    newLoc.y = std::clamp(newLoc.y, 0.0f, screenCoordMin);
+    m_rect.SetPoint(newLoc);
+}
+
+void Invader::Shoot() {
+    projectileIsLaunched = true;
+    m_projectile->Move(2);
 }
 
 void Invader::SetDirection(Direction direction) {
     m_direction = direction;
+}
+
+Rectangle Invader::GetRectangle() {
+    return m_rect;
 }
 
 //Changes the direction (in x pos) the Invader will move 
