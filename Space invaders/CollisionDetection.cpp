@@ -18,5 +18,5 @@ bool CollisionDetection::CheckCollison(const Rectangle& firstRectangle, const Re
     auto bottomRightSecondRect = Point2D(topLeftSecondRect.x + secondRectangle.GetWidth(), topLeftSecondRect.y + secondRectangle.GetHeight());
 
     return topLeftFirstRect.x < bottomRightSecondRect.x && bottomRightFirstRect.x > topLeftSecondRect.x
-        && topLeftFirstRect.y < bottomRightSecondRect.y && bottomRightFirstRect.y && topLeftSecondRect.y;
+        && topLeftFirstRect.y < bottomRightSecondRect.y && bottomRightFirstRect.y > topLeftSecondRect.y;
 }
