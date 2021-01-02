@@ -69,19 +69,18 @@ void Application::CheckCollision() {
     else {
         const auto invaders = m_invManger.GetInvaders();
 
+        int pos = 0;
         for (const auto invader : invaders) {
-            //Only do collision detection if the Invader is alive
-            if (!invader->IsDead()) {
-                if (m_collisonDetection.CheckCollison(projectile->GetRectangle(), invader->GetRectangle())) {
-                    //Kill the invader that got hit
-                    invader->Die();
-                    //reset the projectile so that we can shoot again
-                    m_defender->ResetProjectile();
-                    canShoot = true;
+            if (m_collisonDetection.CheckCollison(projectile->GetRectangle(), invader->GetRectangle())) {
+                //Kill the invader that got hit
+                m_invManger.KillInvaderAtPosition(pos);
+                //reset the projectile so that we can shoot again
+                m_defender->ResetProjectile();
+                canShoot = true;
 
-                    return;
-                }
+                return;
             }
+            pos++;
         }
     }
 }

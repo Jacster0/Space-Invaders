@@ -16,22 +16,23 @@ InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float 
 
 void InvaderManager::Move() {
     bool isDirectionToggled = false;
-
-    if (m_invaders.back()->GetPoint().x == 800 - m_width) {
-        isDirectionToggled = true;
-    }
-
-    else if (m_invaders.front()->GetPoint().x == 0) {
-        isDirectionToggled = true;
-    }
-
-    for (auto invader : m_invaders) {
-        if (isDirectionToggled) {
-            invader->ToggleDirection();
-            invader->MoveY();
+    if (!m_invaders.empty()) {
+        if (m_invaders.back()->GetPoint().x == 800 - m_width) {
+            isDirectionToggled = true;
         }
-        invader->Move();
-        invader->Shoot();
+
+        else if (m_invaders.front()->GetPoint().x == 0) {
+            isDirectionToggled = true;
+        }
+
+        for (auto invader : m_invaders) {
+            if (isDirectionToggled) {
+                invader->ToggleDirection();
+                invader->MoveY();
+            }
+            invader->Move();
+            invader->Shoot();
+        }
     }
 }
 
@@ -47,4 +48,10 @@ Point2D InvaderManager::GetLowestRowCoords() {
 
 const std::vector<std::shared_ptr<Invader>>& InvaderManager::GetInvaders() {
     return m_invaders;
+}
+
+void InvaderManager::KillInvaderAtPosition(int pos) {
+    if (!m_invaders.empty()) {
+        m_invaders.erase(m_invaders.begin() + pos);
+    }  
 }

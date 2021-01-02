@@ -10,8 +10,6 @@ class Renderer;
 class Invader {
 public:
     Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord);
-
-    void Die();
     void Draw();
     void Move();
     void MoveY();
@@ -24,8 +22,6 @@ public:
     Direction GetDirection() const noexcept { return m_direction; }
 
     void ToggleDirection();
-
-    bool IsDead() const noexcept { return m_isDead; }
 private:
     Direction m_direction = Direction::Right;
     Rectangle m_rect;
@@ -33,6 +29,5 @@ private:
     int speed = 2;
     int speedY = 10;
 
-    bool m_isDead{};
     bool projectileIsLaunched = false;
 };

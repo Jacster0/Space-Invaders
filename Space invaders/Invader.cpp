@@ -10,14 +10,8 @@ Invader::Invader(const std::shared_ptr<Renderer>& renderer, float width, float h
 {
 }
 
-void Invader::Die() {
-    m_isDead = true;
-}
-
 void Invader::Draw() {
-    if (!m_isDead) {
-        m_rect.render(RenderFlag::Fill);
-    }
+    m_rect.render(RenderFlag::Fill);
 }
 
 //Moves the invader in X direction

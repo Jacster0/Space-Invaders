@@ -14,6 +14,7 @@ public:
     void Show();
     Point2D GetLowestRowCoords();
     const std::vector<std::shared_ptr<Invader>>& GetInvaders();
+    void KillInvaderAtPosition(int pos);
 private:
     std::vector<std::shared_ptr<Invader>> m_invaders{};
     float m_width{0};
