@@ -40,3 +40,11 @@ void InvaderManager::Show() {
         invader->Draw();
     }
 }
+
+Point2D InvaderManager::GetLowestRowCoords() {
+    return m_invaders.at(0)->GetPoint();
+}
+
+const std::vector<std::shared_ptr<Invader>>& InvaderManager::GetInvaders() {
+    return m_invaders;
+}

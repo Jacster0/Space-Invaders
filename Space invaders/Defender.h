@@ -10,9 +10,11 @@ public:
     void Move(int speed);
     void Draw();
     void Shoot() noexcept;
+    void ResetProjectile();
+    std::shared_ptr<Projectile> GetProjectile() const;
 private:
     Rectangle rect;
-    std::unique_ptr<Projectile> m_projectile;
+    std::shared_ptr<Projectile> m_projectile;
     std::shared_ptr<Renderer> m_renderer;
     bool projectileIsLaunched = false;
 };

@@ -42,6 +42,7 @@ void Application::ProcessInput() {
 }
 
 void Application::Update() {
+    CheckCollision();
     ProcessInput();
 
     m_invManger.Move();
@@ -56,6 +57,35 @@ void Application::Render() {
     m_renderer->Present();
 }
 
+void Application::CheckCollision() {
+    auto projectile = m_defender->GetProjectile();
+
+    auto projectileRectangle = projectile->GetRectangle();
+
+    if (projectileRectangle.GetPoint().y == 0) {
+        m_defender->ResetProjectile();
+        canShoot = true;
+    }
+    else {
+        const auto invaders = m_invManger.GetInvaders();
+
+        for (const auto invader : invaders) {
+            //Only do collision detection if the Invader is alive
+            if (!invader->IsDead()) {
+                if (m_collisonDetection.CheckCollison(projectile->GetRectangle(), invader->GetRectangle())) {
+                    //Kill the invader that got hit
+                    invader->Die();
+                    //reset the projectile so that we can shoot again
+                    m_defender->ResetProjectile();
+                    canShoot = true;
+
+                    return;
+                }
+            }
+        }
+    }
+}
+
 void Application::HandleKeyStrokes() {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
@@ -67,7 +97,10 @@ void Application::HandleKeyStrokes() {
         m_defender->Move(static_cast<int>(-speed));
     }
     
-    if (state[SDL_SCANCODE_SPACE]) {
-        m_defender->Shoot();
+    if (canShoot) {
+        if (state[SDL_SCANCODE_SPACE]) {
+            m_defender->Shoot();
+            canShoot = false;
+        }
     }
 }
