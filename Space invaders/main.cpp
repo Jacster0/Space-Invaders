@@ -1,9 +1,9 @@
 #include "SDL.h"
-#include "Application.h"
+#include "Game.h"
 #include <memory>
 
 int main(int argc, char** argv) {
-    Application app;
-    app.Run();
+    Game game;
+    game.Run();
     return 0;         
 }

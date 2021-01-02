@@ -6,14 +6,13 @@
 #include "Invader.h"
 #include "Projectile.h"
 #include "InvaderManager.h"
-#include <chrono>
 #include "CollisionDetection.h"
 
 class Renderer;
-class Application {
+class Game {
 public:
-    Application();
-    ~Application();
+    Game();
+    ~Game();
     int Run();
     void ProcessInput();
     void Update();

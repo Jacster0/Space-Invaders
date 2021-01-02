@@ -1,9 +1,9 @@
-#include "Application.h"
+#include "Game.h"
 #include "SDL.h"
 #include "Renderer.h"
 #include "Window.h"
 
-Application::Application()  {
+Game::Game()  {
     SDL_Init(SDL_INIT_EVERYTHING);
 
     Window* wnd = Window::Create();
@@ -18,12 +18,12 @@ Application::Application()  {
     m_invManger = InvaderManager(m_renderer, 25, 25);
 }
 
-Application::~Application() {
+Game::~Game() {
     Window::Destroy();
     SDL_Quit();
 }
 
-int Application::Run() {
+int Game::Run() {
     while (true) {
         SDL_Event sdlEvent;
         while (SDL_PollEvent(&sdlEvent)) {
@@ -37,27 +37,26 @@ int Application::Run() {
     }
     return 0;
 }
-void Application::ProcessInput() {
+void Game::ProcessInput() {
     HandleKeyStrokes();
 }
 
-void Application::Update() {
+void Game::Update() {
     CheckCollision();
     ProcessInput();
-
     m_invManger.Move();
 
     m_renderer->SetColor(0, 0, 0,255);
     m_renderer->Clear();
 }
 
-void Application::Render() {
+void Game::Render() {
     m_defender->Draw();
     m_invManger.Show();
     m_renderer->Present();
 }
 
-void Application::CheckCollision() {
+void Game::CheckCollision() {
     auto projectile = m_defender->GetProjectile();
 
     auto projectileRectangle = projectile->GetRectangle();
@@ -85,7 +84,7 @@ void Application::CheckCollision() {
     }
 }
 
-void Application::HandleKeyStrokes() {
+void Game::HandleKeyStrokes() {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
     if (state[SDL_SCANCODE_RIGHT]) {
