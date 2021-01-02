@@ -61,6 +61,8 @@ void Game::CheckCollision() {
 
     auto projectileRectangle = projectile->GetRectangle();
 
+    //If the projectile have missed all the invaders and hit the upper bound, reset the projectile so we
+    //can shoot again
     if (projectileRectangle.GetPoint().y == 0) {
         m_defender->ResetProjectile();
         canShoot = true;
@@ -70,7 +72,7 @@ void Game::CheckCollision() {
 
         int pos = 0;
         for (const auto invader : invaders) {
-            if (m_collisonDetection.CheckCollison(projectile->GetRectangle(), invader->GetRectangle())) {
+            if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
                 //Kill the invader that got hit
                 m_invManger.KillInvaderAtPosition(pos);
                 //reset the projectile so that we can shoot again
