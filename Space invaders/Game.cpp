@@ -25,17 +25,15 @@ Game::~Game() {
 
 int Game::Run() {
     while (true) {
-        SDL_Event sdlEvent;
-        while (SDL_PollEvent(&sdlEvent)) {
-            if (sdlEvent.type == SDL_QUIT) {
-                return static_cast<int>(SDL_QUIT);
-            }
+        //If the returnCode is SDL_QUIT, exit immediately
+        if (m_returnCode == SDL_QUIT) {
+            return static_cast<int>(m_returnCode);
         }
-        
+        HandleEvents();
         Update();
         Render();
     }
-    return 0;
+    return m_returnCode;
 }
 void Game::ProcessInput() {
     HandleKeyStrokes();
@@ -101,6 +99,15 @@ void Game::HandleKeyStrokes() {
         if (state[SDL_SCANCODE_SPACE]) {
             m_defender->Shoot();
             canShoot = false;
+        }
+    }
+}
+
+void Game::HandleEvents() {
+    SDL_Event sdlEvent;
+    while (SDL_PollEvent(&sdlEvent)) {
+        if (sdlEvent.type == SDL_QUIT) {
+            m_returnCode = SDL_QUIT;
         }
     }
 }

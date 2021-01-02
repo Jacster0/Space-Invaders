@@ -20,6 +20,7 @@ public:
 private:
     void CheckCollision();
     void HandleKeyStrokes();
+    void HandleEvents();
     SDL_Event m_event;
     std::shared_ptr<Renderer> m_renderer;
 
@@ -28,6 +29,7 @@ private:
     InvaderManager m_invManger;
     CollisionDetection m_collisonDetection;
 
+    Uint32 m_returnCode = 0;
     static constexpr float speed = 4;
     bool canShoot = true;
 };
