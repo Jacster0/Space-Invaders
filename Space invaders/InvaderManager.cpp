@@ -1,57 +1,73 @@
 #include "InvaderManager.h"
 #include "Invader.h"
+#include <thread>
+#include <chrono>
 
 InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float width, float height) 
     :
     m_width(width),
     m_height(height)
 {
-    for (size_t i = 0, j = 0; i < 4; i++) {
-        
-        m_invaders.push_back(std::make_shared<Invader>(renderer, width, height, 100 + j, 50));
+    std::vector<std::shared_ptr<Invader>> invaderRowVector;
 
-        j += 100;
+    for (int i = 0, k = 0; i < 5; i++) {
+        for (size_t j = 0, l = 0; j < 11; j++) {
+
+            invaderRowVector.push_back(std::make_shared<Invader>(renderer, width, height, l, k));
+            l += 50;
+        }
+        m_invaders.emplace_back(std::move(invaderRowVector));
+        k += 50;
     }
+   
 }
 
 void InvaderManager::Move() {
+    using namespace std::chrono_literals;
+
     bool isDirectionToggled = false;
-    if (!m_invaders.empty()) {
-        if (m_invaders.back()->GetPoint().x == 800 - m_width) {
-            isDirectionToggled = true;
-        }
 
-        else if (m_invaders.front()->GetPoint().x == 0) {
-            isDirectionToggled = true;
-        }
-
-        for (auto invader : m_invaders) {
-            if (isDirectionToggled) {
-                invader->ToggleDirection();
-                invader->MoveY();
+    for (const auto invaderRow : m_invaders) {
+        if (!invaderRow.empty()) {
+            if (invaderRow.back()->GetPoint().x == 800 - m_width) {
+                isDirectionToggled = true;
             }
-            invader->Move();
-            invader->Shoot();
+
+            else if (invaderRow.front()->GetPoint().x == 0) {
+                isDirectionToggled = true;
+            }
+
+            for (auto invader : invaderRow) {
+                if (isDirectionToggled) {
+                    invader->ToggleDirection();
+                    invader->MoveY();
+                }
+                invader->Move();
+                invader->Shoot();
+            }
         }
     }
 }
 
 void InvaderManager::Show() {
-    for (auto invader : m_invaders) {
-        invader->Draw();
+    for (const auto invaderRow : m_invaders) {
+        for (const auto invader : invaderRow) {
+            invader->Draw();
+        }
     }
 }
 
-Point2D InvaderManager::GetLowestRowCoords() {
-    return m_invaders.at(0)->GetPoint();
-}
-
-const std::vector<std::shared_ptr<Invader>>& InvaderManager::GetInvaders() {
+const  std::vector<std::vector<std::shared_ptr<Invader>>>& InvaderManager::GetInvaders() {
     return m_invaders;
 }
 
-void InvaderManager::KillInvaderAtPosition(int pos) {
+void InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
     if (!m_invaders.empty()) {
-        m_invaders.erase(m_invaders.begin() + pos);
+        auto& invaderRow = m_invaders.at(yPos);
+
+        if (!invaderRow.empty()) {
+            invaderRow.erase(invaderRow.begin() + xPos);
+        }
     }  
 }
+

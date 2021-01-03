@@ -35,6 +35,7 @@ int Game::Run() {
     }
     return m_returnCode;
 }
+
 void Game::ProcessInput() {
     HandleKeyStrokes();
 }
@@ -68,18 +69,23 @@ void Game::CheckCollision() {
     else {
         const auto invaders = m_invManger.GetInvaders();
 
-        int pos = 0;
-        for (const auto invader : invaders) {
-            if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
-                //Kill the invader that got hit
-                m_invManger.KillInvaderAtPosition(pos);
-                //reset the projectile so that we can shoot again
-                m_defender->ResetProjectile();
-                canShoot = true;
+        int xPos = 0;
+        int yPos = 0;
+        for (const auto invaderRow : invaders) {
+            xPos = 0;
+            for (const auto invader : invaderRow) {
+                if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
+                    //Kill the invader that got hit
+                    m_invManger.KillInvaderAtPosition(xPos, yPos);
+                    //reset the projectile so that we can shoot again
+                    m_defender->ResetProjectile();
+                    canShoot = true;
 
-                return;
+                    return;
+                }
+                xPos++;
             }
-            pos++;
+            yPos++;
         }
     }
 }

@@ -12,11 +12,10 @@ public:
 
     void Move();
     void Show();
-    Point2D GetLowestRowCoords();
-    const std::vector<std::shared_ptr<Invader>>& GetInvaders();
-    void KillInvaderAtPosition(int pos);
+    const std::vector<std::vector<std::shared_ptr<Invader>>>& GetInvaders();
+    void KillInvaderAtPosition(int xPos, int yPos);
 private:
-    std::vector<std::shared_ptr<Invader>> m_invaders{};
+    std::vector<std::vector<std::shared_ptr<Invader>>> m_invaders{};
     float m_width{0};
     float m_height{0};
 };
