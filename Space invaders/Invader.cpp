@@ -1,12 +1,11 @@
 #include "Invader.h"
 #include "Renderer.h"
-
 #include <algorithm>
 
 Invader::Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord)
     :
     m_rect({ xCoord,yCoord }, 255,255,255,255, width, height, renderer),
-    m_projectile(std::make_unique<Projectile>(xCoord, yCoord, renderer))
+    m_projectile(std::make_shared<Projectile>(xCoord, yCoord, renderer))
 {
 }
 
@@ -30,6 +29,13 @@ void Invader::Move() {
     //clamp the x position inside our screen coords
     newLoc.x = std::clamp(newLoc.x, 0.0f, screenCoordMax);
     m_rect.SetPoint(newLoc);
+
+    //update the projetiles x position if it is not launched
+    if (!projectileIsLaunched) {
+        //make it launch the projectile from the middle of the Defender rectangle
+        const auto xPos = newLoc.x + m_rect.GetWidth() / 2.0f;
+        m_projectile->SetPos(xPos, newLoc.y + m_rect.GetHeight());
+    }
 }
 
 //Moves the Invader in Y direction
@@ -43,18 +49,32 @@ void Invader::MoveY() {
     //clamp the y position inside our screen coords
     newLoc.y = std::clamp(newLoc.y, 0.0f, screenCoordMin);
     m_rect.SetPoint(newLoc);
+
+}
+//Resets the projectiles state and position
+void Invader::ResetProjectile() {
+    auto loc = m_rect.GetPoint();
+
+    //make the projectile x coord to be in the middle of the Defender rectangle
+    const auto xPos = loc.x + m_rect.GetWidth() / 2.0f;
+    m_projectile->SetPos(xPos, loc.y + m_rect.GetHeight());
+
+    projectileIsLaunched = false;
 }
 
 void Invader::Shoot() {
     projectileIsLaunched = true;
-    m_projectile->Move(2);
 }
 
 void Invader::SetDirection(Direction direction) {
     m_direction = direction;
 }
 
-Rectangle Invader::GetRectangle() {
+void Invader::Kill() {
+    m_isDead = true;
+}
+
+const Rectangle& Invader::GetRectangle() {
     return m_rect;
 }
 

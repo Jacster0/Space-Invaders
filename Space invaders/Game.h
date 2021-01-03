@@ -22,9 +22,9 @@ private:
     void HandleKeyStrokes();
     void HandleEvents();
     SDL_Event m_event;
-    std::shared_ptr<Renderer> m_renderer;
 
-    std::unique_ptr<Defender> m_defender;
+    std::shared_ptr<Renderer> m_renderer;
+    std::shared_ptr<Defender> m_defender;
 
     InvaderManager m_invManger;
     CollisionDetection m_collisonDetection;

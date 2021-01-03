@@ -13,7 +13,7 @@ Game::Game()  {
     m_renderer->SetColor(0, 0, 0, 255);
     m_renderer->Clear();
 
-    m_defender = std::make_unique<Defender>(m_renderer);
+    m_defender = std::make_shared<Defender>(m_renderer);
 
     m_invManger = InvaderManager(m_renderer, 25, 25);
 }
@@ -43,6 +43,9 @@ void Game::ProcessInput() {
 void Game::Update() {
     CheckCollision();
     ProcessInput();
+
+    m_invManger.Shoot();
+    m_invManger.CheckCollision(m_defender);
     m_invManger.Move();
 
     m_renderer->SetColor(0, 0, 0,255);
@@ -71,17 +74,20 @@ void Game::CheckCollision() {
 
         int xPos = 0;
         int yPos = 0;
-        for (const auto invaderRow : invaders) {
+        for (const auto& invaderRow : invaders) {
             xPos = 0;
-            for (const auto invader : invaderRow) {
-                if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
-                    //Kill the invader that got hit
-                    m_invManger.KillInvaderAtPosition(xPos, yPos);
-                    //reset the projectile so that we can shoot again
-                    m_defender->ResetProjectile();
-                    canShoot = true;
+            for (const auto& invader : invaderRow) {
+                //Don't do any collision detection on a dead invader
+                if (!invader->IsDead()) {
+                    if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
+                        //Kill the invader that got hit
+                        m_invManger.KillInvaderAtPosition(xPos, yPos);
+                        //reset the projectile so that we can shoot again
+                        m_defender->ResetProjectile();
+                        canShoot = true;
 
-                    return;
+                        return;
+                    }
                 }
                 xPos++;
             }
