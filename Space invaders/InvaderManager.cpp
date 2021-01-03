@@ -51,9 +51,9 @@ void InvaderManager::Move() {
             for (auto invader : invaderRow) {
                 if (isDirectionToggled) {
                     invader->ToggleDirection();
-                    //invader->MoveY();
+                    invader->MoveY();
                 }
-                //invader->Move();
+                invader->Move();
             }
         }
     }
