@@ -99,11 +99,15 @@ void Game::CheckCollision() {
 void Game::HandleKeyStrokes() {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
-    if (state[SDL_SCANCODE_RIGHT]) {
+    if (state[SDL_SCANCODE_ESCAPE]) {
+        m_returnCode = SDL_QUIT;
+    }
+
+    if (state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]) {
         m_defender->Move(static_cast<int>(speed));
     }
 
-    if (state[SDL_SCANCODE_LEFT]) {
+    if (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]) {
         m_defender->Move(static_cast<int>(-speed));
     }
     
