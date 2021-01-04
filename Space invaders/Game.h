@@ -30,6 +30,11 @@ private:
     CollisionDetection m_collisonDetection;
 
     Uint32 m_returnCode = 0;
-    static constexpr float speed = 4;
+
+    Uint32 m_currentTime = 0;
+    Uint32 m_lastTime = 0;
+    Uint32 m_speedFactor = 0;
+
+    static constexpr float speed = 0.5f;
     bool canShoot = true;
 };

@@ -8,10 +8,10 @@ Projectile::Projectile(float posX, float posY, const std::shared_ptr<Renderer>& 
 {
 }
 
-void Projectile::Move(int speed) {
+void Projectile::Move(float speed) {
     int oldY = m_rect.GetPoint().y;
     Point2D newLoc = m_rect.GetPoint();
-    newLoc.y -= 2 * speed;
+    newLoc.y -= 0.40f * speed;
 
     newLoc.y = std::max(0.0f,newLoc.y);
     m_rect.SetPoint(newLoc);
@@ -23,4 +23,8 @@ void Projectile::Draw() {
 
 void Projectile::SetXPos(float pos) noexcept {
     m_rect.SetPoint({pos, 550});
+}
+
+void Projectile::SetPos(float xPos, float yPos) noexcept {
+    m_rect.SetPoint({ xPos, yPos });
 }

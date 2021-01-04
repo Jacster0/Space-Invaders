@@ -33,8 +33,8 @@ private:
     Direction m_direction = Direction::Right;
     Rectangle m_rect;
     std::shared_ptr<Projectile> m_projectile;
-    int speed = 2;
-    int speedY = 10;
+    int speed = 10;
+    int speedY = 80;
 
     bool m_isDead = false;
     bool projectileIsLaunched = false;

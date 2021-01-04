@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <chrono>
 #include "Point2D.h"
 #include "CollisionDetection.h"
 
@@ -12,7 +13,7 @@ public:
     InvaderManager() = default;
     InvaderManager(const std::shared_ptr<Renderer>& renderer, float width, float height);
 
-    void Move();
+    void Move(float speedFactor);
     void Show();
     const std::vector<std::vector<std::shared_ptr<Invader>>>& GetInvaders();
     void KillInvaderAtPosition(int xPos, int yPos);
@@ -28,6 +29,7 @@ private:
     std::shared_ptr<Invader> m_dirtyInvader{ nullptr };
 
     CollisionDetection m_collisionDetection;
+    std::chrono::steady_clock::time_point m_timePoint = std::chrono::steady_clock::now();
 
     float m_width{0};
     float m_height{0};

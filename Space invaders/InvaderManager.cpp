@@ -13,10 +13,10 @@ InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float 
     m_width(width),
     m_height(height)
 {
-    std::vector<std::shared_ptr<Invader>> invaderRowVector;
+    InvaderList invaderRowVector;
 
-    for (int i = 0, k = 0; i < 5; i++) {
-        for (size_t j = 0, l = 0; j < 11; j++) {
+    for (int i = 0, k = 50; i < 5; i++) {
+        for (size_t j = 0, l = 50; j < 11; j++) {
 
             invaderRowVector.push_back(std::make_shared<Invader>(renderer, width, height, l, k));
             l += 50;
@@ -29,10 +29,25 @@ InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float 
     std::copy(lastRow.begin(), lastRow.end(), std::back_inserter(freeInvaders));
 }
 
-void InvaderManager::Move() {
+void InvaderManager::Move(float speedFactor) {
     using namespace std::chrono_literals;
 
+    auto timePoint = std::chrono::steady_clock::now;
     bool isDirectionToggled = false;
+
+    auto dt = std::chrono::steady_clock::now() - m_timePoint;
+
+    for (const auto invaderRow : m_invaders) {
+        for (auto invader : invaderRow) {
+            if (invader->GetProjectileIsLaunched()) {
+                invader->GetProjectile()->Move(-1 * speedFactor);
+            }
+        }
+    }
+
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(dt) < 500ms) {
+        return;
+    }
 
     for (const auto invaderRow : m_invaders) {
         if (!invaderRow.empty()) {
@@ -57,27 +72,26 @@ void InvaderManager::Move() {
             }
         }
     }
+    m_timePoint = std::chrono::high_resolution_clock::now();
 }
 
 void InvaderManager::Show() {
     for (const auto& invaderRow : m_invaders) {
         for (const auto& invader : invaderRow) {
-            //If the invader is dead but it has a inflight projectile, draw and move the projectile
+            //If the invader is dead but it has an inflight projectile, draw and move the projectile
             if (invader->IsDead()) {
                 if (invader->GetProjectileIsLaunched()) {
                     auto projectile = invader->GetProjectile();
                     projectile->Draw();
-                    projectile->Move(-1);
                 }
             }
-            //Don't draw dead invaders
-            else if (!invader->IsDead()) {
+
+            else {
                 invader->Draw();
 
                 if (invader->GetProjectileIsLaunched()) {
                     auto projectile = invader->GetProjectile();
                     projectile->Draw();
-                    projectile->Move(-1);
                 }
             }
         }
@@ -94,10 +108,11 @@ void InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
         invader->Kill();
 
         //Add the invader just above the killed invader in the freeInvader list
-        auto newPos = yPos - 1;
+        auto abovePos = yPos - 1;
+        auto belowPos = yPos + 1;
 
-        if (newPos >= 0) {
-            auto& invaderAbove = m_invaders.at(newPos).at(xPos);
+        if (abovePos >= 0) {
+            auto& invaderAbove = m_invaders.at(abovePos).at(xPos);
             freeInvaders.push_back(invaderAbove);
         }
 }
@@ -112,6 +127,9 @@ void InvaderManager::Shoot() {
                 }),
             freeInvaders.end());
 
+        if (freeInvaders.empty()) {
+            return;
+        }
         //Set up the random generating stuff
         std::random_device device;
         std::default_random_engine rng(device());

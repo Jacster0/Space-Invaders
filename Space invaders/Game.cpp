@@ -16,6 +16,8 @@ Game::Game()  {
     m_defender = std::make_shared<Defender>(m_renderer);
 
     m_invManger = InvaderManager(m_renderer, 25, 25);
+
+    m_lastTime = SDL_GetTicks();
 }
 
 Game::~Game() {
@@ -41,19 +43,32 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
+    m_currentTime = SDL_GetTicks();
+
+    m_speedFactor = m_currentTime - m_lastTime;
+
     CheckCollision();
     ProcessInput();
 
+    if (m_defender->GetProjectileIsLaunched()) {
+        m_defender->GetProjectile()->Move(m_speedFactor);
+    }
+
     m_invManger.Shoot();
     m_invManger.CheckCollision(m_defender);
-    m_invManger.Move();
+    m_invManger.Move(m_speedFactor);
 
     m_renderer->SetColor(0, 0, 0,255);
     m_renderer->Clear();
+
+    m_lastTime = m_currentTime;
 }
 
 void Game::Render() {
     m_defender->Draw();
+    if (m_defender->GetProjectileIsLaunched()) {
+        m_defender->GetProjectile()->Draw();
+    }
     m_invManger.Show();
     m_renderer->Present();
 }
@@ -104,11 +119,11 @@ void Game::HandleKeyStrokes() {
     }
 
     if (state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]) {
-        m_defender->Move(static_cast<int>(speed));
+        m_defender->Move(speed * static_cast<float>(m_speedFactor));
     }
 
     if (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]) {
-        m_defender->Move(static_cast<int>(-speed));
+        m_defender->Move(-speed * static_cast<float>(m_speedFactor));
     }
     
     if (canShoot) {
