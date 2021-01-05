@@ -78,7 +78,7 @@ void InvaderManager::Move(float speedFactor) {
 void InvaderManager::Show() {
     for (const auto& invaderRow : m_invaders) {
         for (const auto& invader : invaderRow) {
-            //If the invader is dead but it has an inflight projectile, draw and move the projectile
+            //If the invader is dead but it has an inflight projectile, draw the projectile
             if (invader->IsDead()) {
                 if (invader->GetProjectileIsLaunched()) {
                     auto projectile = invader->GetProjectile();
@@ -107,10 +107,16 @@ void InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
         //kill the invader
         invader->Kill();
 
-        //Add the invader just above the killed invader in the freeInvader list
-        auto abovePos = yPos - 1;
-        auto belowPos = yPos + 1;
+        if (yPos < m_invaders.size()-1) {
+            //If the dead invader was not a free invader, we cannot make the invader above a free invader,
+            //because the invader below the dead invader is still alive and blocking.
+            if (std::find(freeInvaders.begin(), freeInvaders.end(), invader) == freeInvaders.end()) {
+                return;
+            }
+        }
 
+        //find the invader above the dead invader and make him free
+        auto abovePos = yPos - 1;
         if (abovePos >= 0) {
             auto& invaderAbove = m_invaders.at(abovePos).at(xPos);
             freeInvaders.push_back(invaderAbove);
@@ -149,10 +155,21 @@ void InvaderManager::CheckCollision(const std::shared_ptr<Defender>& defender) {
     if (m_dirtyInvader) {
         auto projectileRectangle = m_dirtyInvader->GetProjectile()->GetRectangle();
 
+        //Check for collisions of the invader projectile and the defender body
         if (m_collisionDetection.CheckCollison(projectileRectangle, defender->GetRectangle())) {
             //reset the projectile so that the invaders can shoot again
             m_dirtyInvader->ResetProjectile();
             m_canShoot = true;
+        }
+
+        //Check for collisions of the invader projectile and the defender projectile
+        else if (m_collisionDetection.CheckCollison(projectileRectangle, defender->GetProjectile()->GetRectangle())) {
+            //reset the projectile so that the invaders can shoot again
+            m_dirtyInvader->ResetProjectile();
+            m_canShoot = true;
+
+            //We need to reset the defenders projectile if a collision has occured
+            defender->ResetProjectile();
         }
 
         //if the projectile missed the defender and all the barriers, reset the projectile so that 
