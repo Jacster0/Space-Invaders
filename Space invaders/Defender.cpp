@@ -5,7 +5,7 @@
 
 Defender::Defender(const std::shared_ptr<Renderer>& renderer)
     :
-    m_rect({ 400, 550 }, 255, 0, 0, 255, 50, 50, renderer),
+    m_rect({ 400, 550 }, 255, 0, 0, 255, 30, 30, renderer),
     m_projectile(std::make_shared<Projectile>(m_rect.GetPoint().x,550, renderer))
 {
 
@@ -47,6 +47,11 @@ void Defender::ResetProjectile() {
     m_projectileIsLaunched = false;
 }
 
+//Resets the defender to a non-hit state
+void Defender::ResetHit() {
+    m_isHit = false;
+}
+
 std::shared_ptr<Projectile> Defender::GetProjectile() const noexcept {
     return m_projectile;
 }
@@ -57,4 +62,13 @@ bool Defender::GetProjectileIsLaunched() const noexcept {
 
 const Rectangle& Defender::GetRectangle() const noexcept {
     return m_rect;
+}
+
+//Defender has been hit by an enemy projectile
+void Defender::Hit() noexcept {
+    m_isHit = true;
+}
+
+bool Defender::IsHit() const noexcept {
+    return m_isHit;
 }

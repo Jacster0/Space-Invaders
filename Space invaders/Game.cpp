@@ -15,7 +15,7 @@ Game::Game()  {
 
     m_defender = std::make_shared<Defender>(m_renderer);
 
-    m_invManger = InvaderManager(m_renderer, 25, 25);
+    m_invManger = InvaderManager(m_renderer, 26, 26);
 
     m_lastTime = SDL_GetTicks();
 }
@@ -26,7 +26,7 @@ Game::~Game() {
 }
 
 int Game::Run() {
-    while (true) {
+    while (!m_gameOver) {
         //If the returnCode is SDL_QUIT, exit immediately
         if (m_returnCode == SDL_QUIT) {
             return static_cast<int>(m_returnCode);
@@ -43,6 +43,15 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
+    //if there is no invaders left, the Defender (player) won the game
+    if (m_invManger.GetNumberOfAliveInvaders() == 0) {
+        m_gameOver = true;
+    }
+    //If the defender is out of lives, mark the game as gameover.
+    else if (m_numberOfLives == 0) {
+        m_gameOver = true;
+    }
+
     m_currentTime = SDL_GetTicks();
 
     m_speedFactor = m_currentTime - m_lastTime;
@@ -76,6 +85,11 @@ void Game::Render() {
 void Game::CheckCollision() {
     //invader collisions
     m_invManger.CheckCollision(m_defender);
+
+    if (m_defender->IsHit()) {
+        m_numberOfLives--;
+        m_defender->ResetHit();
+    }
 
     //Defender collision
     auto projectile = m_defender->GetProjectile();

@@ -37,4 +37,7 @@ private:
 
     static constexpr float speed = 0.5f;
     bool canShoot = true;
+
+    int m_numberOfLives = 3;
+    bool m_gameOver = false;
 };
