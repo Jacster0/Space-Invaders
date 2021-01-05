@@ -47,7 +47,6 @@ void Game::Update() {
 
     m_speedFactor = m_currentTime - m_lastTime;
 
-    CheckCollision();
     ProcessInput();
 
     if (m_defender->GetProjectileIsLaunched()) {
@@ -55,8 +54,9 @@ void Game::Update() {
     }
 
     m_invManger.Shoot();
-    m_invManger.CheckCollision(m_defender);
     m_invManger.Move(m_speedFactor);
+
+    CheckCollision();
 
     m_renderer->SetColor(0, 0, 0,255);
     m_renderer->Clear();
@@ -74,13 +74,22 @@ void Game::Render() {
 }
 
 void Game::CheckCollision() {
+    //invader collisions
+    m_invManger.CheckCollision(m_defender);
+
+    //Defender collision
     auto projectile = m_defender->GetProjectile();
 
     auto projectileRectangle = projectile->GetRectangle();
 
+    //If the defender have not launched the projectile there is no collision detection to do for the defender
+    if (!m_defender->GetProjectileIsLaunched()) {
+        canShoot = true;
+        return;
+    }
     //If the projectile have missed all the invaders and hit the upper bound, reset the projectile so we
     //can shoot again
-    if (projectileRectangle.GetPoint().y == 0) {
+    if (projectileRectangle.GetPoint().y <= 0) {
         m_defender->ResetProjectile();
         canShoot = true;
     }
