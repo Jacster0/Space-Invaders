@@ -13,7 +13,6 @@ void Projectile::Move(float speed) {
     Point2D newLoc = m_rect.GetPoint();
     newLoc.y -= 0.40f * speed;
 
-    newLoc.y = std::max(0.0f,newLoc.y);
     m_rect.SetPoint(newLoc);
 }
 
