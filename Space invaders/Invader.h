@@ -5,11 +5,12 @@
 #include <iostream>
 
 enum class Direction {Right, Left};
+enum class Level {One, Two, Three};
 
 class Renderer;
 class Invader {
 public:
-    Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord);
+    Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord, Level level);
     void Draw();
     void Move();
     void MoveY();
@@ -29,6 +30,9 @@ public:
 
     void ToggleDirection();
 
+    void SetLevel(Level level) noexcept;
+    Level GetLevel() const noexcept;
+
     bool IsDead() const noexcept { return m_isDead; }
     void ResetProjectile();
 private:
@@ -40,4 +44,5 @@ private:
 
     bool m_isDead = false;
     bool projectileIsLaunched = false;
+    Level m_alienLevel;
 };

@@ -2,10 +2,11 @@
 #include "Renderer.h"
 #include <algorithm>
 
-Invader::Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord)
+Invader::Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord, Level level)
     :
+    m_alienLevel(level),
     m_rect({ xCoord,yCoord }, 255,255,255,255, width, height, renderer),
-    m_projectile(std::make_shared<Projectile>(xCoord, yCoord, renderer))
+    m_projectile(std::make_shared<Projectile>(xCoord, yCoord, renderer,255,0,0))
 {
 }
 
@@ -60,6 +61,14 @@ void Invader::ResetProjectile() {
     m_projectile->SetPos(xPos, loc.y + m_rect.GetHeight());
 
     projectileIsLaunched = false;
+}
+
+void Invader::SetLevel(Level level) noexcept {
+    m_alienLevel = level;
+}
+
+Level Invader::GetLevel() const noexcept {
+    return m_alienLevel;
 }
 
 void Invader::Shoot() {
