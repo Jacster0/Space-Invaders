@@ -1,14 +1,20 @@
 #include "Defender.h"
 #include "Renderer.h"
+#include "SDL_image.h"
 #include <algorithm>
 #include <iostream>
 
 Defender::Defender(const std::shared_ptr<Renderer>& renderer)
     :
-    m_rect({ 400, 550 }, 255, 0, 0, 255, 30, 30, renderer),
-    m_projectile(std::make_shared<Projectile>(m_rect.GetPoint().x,550, renderer))
+    m_renderer(renderer),
+    m_rect({ 400, 550 }, 255, 0, 0, 255, 32, 32, renderer),
+    m_projectile(std::make_shared<Projectile>(m_rect.GetPoint().x,550, renderer, 0, 255, 0))
 {
+    m_defenderTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Defender.png)");
+}
 
+Defender::~Defender() {
+    SDL_DestroyTexture(m_defenderTexture);
 }
 
 void Defender::Move(float speed) {
@@ -29,7 +35,8 @@ void Defender::Move(float speed) {
 }
 
 void Defender::Draw() {
-    m_rect.render(RenderFlag::Fill);
+    SDL_Rect rect = { m_rect.GetPoint().x,m_rect.GetPoint().y, m_rect.GetWidth(), m_rect.GetHeight() };
+    SDL_RenderCopy(m_renderer->GetSDLRenderer(), m_defenderTexture, nullptr, &rect);
 }
 
 void Defender::Shoot() noexcept {

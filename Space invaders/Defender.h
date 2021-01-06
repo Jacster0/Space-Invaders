@@ -4,9 +4,12 @@
 #include "Projectile.h"
 
 class Renderer;
+class SDL_Texture;
 class Defender {
 public:
     Defender(const std::shared_ptr<Renderer>& renderer);
+    ~Defender();
+
     void Move(float speed);
     void Draw();
     void Shoot() noexcept;
@@ -23,6 +26,8 @@ private:
     Rectangle m_rect;
     std::shared_ptr<Projectile> m_projectile;
     std::shared_ptr<Renderer> m_renderer;
+
+    SDL_Texture* m_defenderTexture = nullptr;
 
     bool m_projectileIsLaunched = false;
     bool m_isHit = false;

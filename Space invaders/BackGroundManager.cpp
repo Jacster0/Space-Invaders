@@ -2,8 +2,7 @@
 #include "Renderer.h"
 #include "SDL.h"
 #include "include/SDL_ttf.h"
-
-#include <sstream>
+#include "SDL_image.h"
 
 BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>& renderer, int numLives)
     :
@@ -17,7 +16,6 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
         xPos += 60;
     }
 
-   
     //Initialize the ttf engine
     TTF_Init();
 
@@ -26,11 +24,17 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     m_playerHighscoreTexture = CreateTextTexture("Highscore:");
     m_gameOverTexture = CreateTextTexture("GAME OVER", 255, 0, 0);
     m_playAgainOrQuitTexture = CreateTextTexture("Press Enter to play again or Escape to quit.");
+
+    //Create player life texture
+    m_playerLivesTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Defender.png)");
 }
 
 BackGroundScreenManager::~BackGroundScreenManager() {
     SDL_DestroyTexture(m_playerScoreTexture);
     SDL_DestroyTexture(m_playerHighscoreTexture);
+    SDL_DestroyTexture(m_gameOverTexture);
+    SDL_DestroyTexture(m_playAgainOrQuitTexture);
+    SDL_DestroyTexture(m_playerLivesTexture);
 
     TTF_Quit(); 
 }
@@ -38,7 +42,9 @@ BackGroundScreenManager::~BackGroundScreenManager() {
 void BackGroundScreenManager::Show() {
    
     for (auto& rect : m_defenderLivesRectangle) {
-        rect.render(RenderFlag::Fill);
+        auto point = rect.GetPoint();
+
+        CopyTextureToRenderer(m_playerLivesTexture, rect.GetWidth(), rect.GetHeight(), point.x, point.y);
     }
 
     //Print the score and highScore to the Console window  
@@ -118,7 +124,7 @@ void BackGroundScreenManager::CopyTextureToRenderer(SDL_Texture* texture, int wi
 
 //Creates a SDL_Texture containing the text given as the argument
 SDL_Texture* BackGroundScreenManager::CreateTextTexture(const std::string& text, int r, int g, int b) {
-    auto font = TTF_OpenFont(R"(C:\Windows\Fonts\Arial.ttf)", 46);
+    auto font = TTF_OpenFont(R"(Resources\arial.ttf)", 46);
     SDL_Color textColor = { r,g,b };
       
     

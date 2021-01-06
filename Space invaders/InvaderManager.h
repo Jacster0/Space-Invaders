@@ -2,16 +2,19 @@
 #include <vector>
 #include <memory>
 #include <chrono>
+#include <array>
 #include "Point2D.h"
 #include "CollisionDetection.h"
 
 class Defender;
 class Invader;
 class Renderer;
+class SDL_Texture;
 class InvaderManager {
 public:
     InvaderManager() = default;
     InvaderManager(const std::shared_ptr<Renderer>& renderer, float width, float height);
+    ~InvaderManager();
 
     void Move(float speedFactor);
     void Show();
@@ -40,4 +43,16 @@ private:
 
     //There are 5 rows of invaders, and every row contains 11 invaders
     int m_numberOfInvadersAlive = 5 * 11;
+
+    std::array<SDL_Texture*, 2> m_alienLevel1Textures;
+    std::array<SDL_Texture*, 2> m_alienLevel2Textures;
+    std::array<SDL_Texture*, 2> m_alienLevel3Textures;
+   
+    SDL_Texture* m_alienLevel1textureToRender = nullptr;
+    SDL_Texture* m_alienLevel2textureToRender = nullptr;
+    SDL_Texture* m_alienLevel3textureToRender = nullptr;
+
+    std::shared_ptr<Renderer> m_renderer;
+
+    unsigned long counter = 0;
 };

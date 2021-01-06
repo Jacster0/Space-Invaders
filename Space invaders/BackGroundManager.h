@@ -33,6 +33,7 @@ private:
     SDL_Texture* m_playerHighscoreTexture = nullptr;
     SDL_Texture* m_gameOverTexture        = nullptr;
     SDL_Texture* m_playAgainOrQuitTexture = nullptr;
+    SDL_Texture* m_playerLivesTexture     = nullptr;
 
     int m_numDefenderLives = 0;
     int m_playerScore = 0;

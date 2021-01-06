@@ -1,32 +1,78 @@
 #include "InvaderManager.h"
 #include "Invader.h"
 #include "Defender.h"
-#include <thread>
 #include <chrono>
 #include <random>
 #include <algorithm>
 #include <iterator>
 #include <cassert>
+#include "SDL.h"
+#include "SDL_image.h"
+#include "Renderer.h"
 
 InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float width, float height) 
     :
+    m_renderer(renderer),
     m_width(width),
     m_height(height)
 {
     InvaderList invaderRowVector;
+    //Load some textures
+    m_alienLevel1Textures = {
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel1First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel1Second.png)")
+    };
 
-    for (int i = 0, k = 50; i < 5; i++) {
-        for (size_t j = 0, l = 50; j < 11; j++) {
+    m_alienLevel2Textures = {
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel2First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel2Second.png)")
+    };
 
-            invaderRowVector.push_back(std::make_shared<Invader>(renderer, width, height, l, k));
-            l += 50;
+    m_alienLevel3Textures = {
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel3First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel3Second.png)")
+    };
+
+    m_alienLevel1textureToRender = m_alienLevel1Textures[0];
+    m_alienLevel2textureToRender = m_alienLevel2Textures[0];
+    m_alienLevel3textureToRender = m_alienLevel3Textures[0];
+    
+    Level alienLevel = Level::Three;
+
+    for (int i = 0, yPos = 50; i < 5; i++) {
+        for (size_t j = 0, xPos = 50; j < 11; j++) {
+
+            if (i < 1) {
+                alienLevel = Level::Three;
+            }
+            else if (i < 3) {
+                alienLevel = Level::Two;
+            }
+            else {
+                alienLevel = Level::One;
+            }
+            invaderRowVector.push_back(std::make_shared<Invader>(renderer, width, height, xPos, yPos, alienLevel));
+            xPos += 50;
         }
+
         m_invaders.emplace_back(std::move(invaderRowVector));
-        k += 50;
+        yPos += 50;
     }
    //Add the last row to the freeInvaders list
     const auto& lastRow = m_invaders.at(m_invaders.size() - 1);
     std::copy(lastRow.begin(), lastRow.end(), std::back_inserter(freeInvaders));
+}
+
+InvaderManager::~InvaderManager() {
+    for (auto texture : m_alienLevel1Textures) {
+        SDL_DestroyTexture(texture);
+    }
+    for (auto texture : m_alienLevel2Textures) {
+        SDL_DestroyTexture(texture);
+    }
+    for (auto texture : m_alienLevel3Textures) {
+        SDL_DestroyTexture(texture);
+    }
 }
 
 void InvaderManager::Move(float speedFactor) {
@@ -49,6 +95,14 @@ void InvaderManager::Move(float speedFactor) {
         return;
     }
 
+    //Decide which alien to render this move
+    ++counter;
+
+    m_alienLevel1textureToRender = (counter % 2 == 0) ? m_alienLevel1Textures[0] : m_alienLevel1Textures[1];
+    m_alienLevel2textureToRender = (counter % 2 == 0) ? m_alienLevel2Textures[0] : m_alienLevel2Textures[1];
+    m_alienLevel3textureToRender = (counter % 2 == 0) ? m_alienLevel3Textures[0] : m_alienLevel3Textures[1];
+   
+    //Do the move logic
     for (const auto invaderRow : m_invaders) {
         if (!invaderRow.empty()) {
             for (auto invader : invaderRow) {
@@ -87,8 +141,22 @@ void InvaderManager::Show() {
             }
 
             else {
-                invader->Draw();
+                //Render a image to the invader rectangle
+                SDL_Rect rect{ invader->GetRectangle().GetPoint().x, invader->GetRectangle().GetPoint().y ,m_width ,m_height };
 
+                switch (invader->GetLevel())
+                {
+                case Level::One:
+                    SDL_RenderCopy(m_renderer->GetSDLRenderer(), m_alienLevel1textureToRender, nullptr, &rect);
+                        break;
+                case Level::Two:
+                    SDL_RenderCopy(m_renderer->GetSDLRenderer(), m_alienLevel2textureToRender, nullptr, &rect);
+                    break;
+                case Level::Three:
+                    SDL_RenderCopy(m_renderer->GetSDLRenderer(), m_alienLevel3textureToRender, nullptr, &rect);
+                    break;
+                }
+               
                 if (invader->GetProjectileIsLaunched()) {
                     auto projectile = invader->GetProjectile();
                     projectile->Draw();
