@@ -28,7 +28,7 @@ private:
     std::shared_ptr<Renderer> m_renderer;
     std::shared_ptr<Defender> m_defender;
 
-    InvaderManager m_invManger;
+    std::unique_ptr<InvaderManager> m_invManger;
     CollisionDetection m_collisonDetection;
     std::unique_ptr<BackGroundScreenManager> m_backgroundManager;
 

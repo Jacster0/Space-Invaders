@@ -3,9 +3,12 @@
 #include "Renderer.h"
 #include "Window.h"
 #include "BackGroundManager.h"
+#include "SDL_image.h"
 
 Game::Game()  {
     SDL_Init(SDL_INIT_EVERYTHING);
+    //init the SDL2_Image library
+    IMG_Init(IMG_INIT_PNG);
 
     Window* wnd = Window::Create();
     wnd->Show();
@@ -14,9 +17,8 @@ Game::Game()  {
     m_renderer->SetColor(0, 0, 0, 255);
     m_renderer->Clear();
 
-    m_defender = std::make_shared<Defender>(m_renderer);
-    m_invManger = InvaderManager(m_renderer, 26, 26);
-
+    m_defender          = std::make_shared<Defender>(m_renderer);
+    m_invManger         = std::make_unique<InvaderManager>(m_renderer, 44, 32);
     m_backgroundManager = std::make_unique<BackGroundScreenManager>(m_renderer, m_numberOfLives);
 
     m_lastTime = SDL_GetTicks();
@@ -30,7 +32,8 @@ Game::~Game() {
 int Game::Run() {
     while (true) {
         if (m_playerWon) {
-            //Restart the game, keep track of the score
+            SDL_Delay(500);
+            //Wait 500ms, then restart the game, keep track of the score
             Restart(true);
         }
 
@@ -65,7 +68,7 @@ void Game::Update() {
     m_backgroundManager->Update(m_score);
 
     //if there is no invaders left, the Defender (player) won the game
-    if (m_invManger.GetNumberOfAliveInvaders() == 0) {
+    if (m_invManger->GetNumberOfAliveInvaders() == 0) {
         m_playerWon = true;
         return;
     }
@@ -84,8 +87,8 @@ void Game::Update() {
         m_defender->GetProjectile()->Move(m_speedFactor);
     }
 
-    m_invManger.Shoot();
-    m_invManger.Move(m_speedFactor);
+    m_invManger->Shoot();
+    m_invManger->Move(m_speedFactor);
 
     CheckCollision();
 
@@ -99,14 +102,14 @@ void Game::Render() {
     if (m_defender->GetProjectileIsLaunched()) {
         m_defender->GetProjectile()->Draw();
     }
-    m_invManger.Show();
+    m_invManger->Show();
     m_backgroundManager->Show();
     m_renderer->Present();
 }
 
 void Game::Restart(bool keepScore) {
     m_defender->Reset();
-    m_invManger.Reset();
+    m_invManger->Reset();
     m_backgroundManager->Reset();
 
     //Everything that needs to be reset in the Game class
@@ -119,7 +122,7 @@ void Game::Restart(bool keepScore) {
 
 void Game::CheckCollision() {
     //invader collisions
-    m_invManger.CheckCollision(m_defender);
+    m_invManger->CheckCollision(m_defender);
 
     if (m_defender->IsHit()) {
         m_numberOfLives--;
@@ -146,7 +149,7 @@ void Game::CheckCollision() {
         canShoot = true;
     }
     else {
-        const auto invaders = m_invManger.GetInvaders();
+        const auto invaders = m_invManger->GetInvaders();
 
         int xPos = 0;
         int yPos = 0;
@@ -157,7 +160,7 @@ void Game::CheckCollision() {
                 if (!invader->IsDead()) {
                     if (m_collisonDetection.CheckCollison(projectileRectangle, invader->GetRectangle())) {
                         //Kill the invader that got hit
-                        m_score += m_invManger.KillInvaderAtPosition(xPos, yPos);
+                        m_score += m_invManger->KillInvaderAtPosition(xPos, yPos);
                         //reset the projectile so that we can shoot again
                         m_defender->ResetProjectile();
                         canShoot = true;
