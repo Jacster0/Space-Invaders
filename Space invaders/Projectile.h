@@ -6,7 +6,7 @@
 class Renderer;
 class Projectile {
 public:
-    Projectile(float posX, float posY, const std::shared_ptr<Renderer>& renderer);
+    Projectile(float posX, float posY, const std::shared_ptr<Renderer>& renderer, int r, int g, int b);
     void Move(float speed);
     void Draw();
     void SetXPos(float pos) noexcept;
