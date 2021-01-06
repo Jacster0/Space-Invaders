@@ -52,6 +52,12 @@ void Defender::ResetHit() {
     m_isHit = false;
 }
 
+void Defender::Reset() {
+    m_rect.SetPoint({ 400, 550 });
+    ResetProjectile();
+    ResetHit();
+}
+
 std::shared_ptr<Projectile> Defender::GetProjectile() const noexcept {
     return m_projectile;
 }

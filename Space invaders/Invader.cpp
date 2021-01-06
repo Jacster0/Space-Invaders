@@ -74,7 +74,15 @@ void Invader::Kill() {
     m_isDead = true;
 }
 
-const Rectangle& Invader::GetRectangle() {
+void Invader::Revive() {
+    m_isDead = false;
+}
+
+const Rectangle& Invader::GetRectangle() const {
+    return m_rect;
+}
+
+Rectangle& Invader::GetRectangle() {
     return m_rect;
 }
 

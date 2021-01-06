@@ -8,6 +8,7 @@
 #include "InvaderManager.h"
 #include "CollisionDetection.h"
 
+class BackGroundScreenManager;
 class Renderer;
 class Game {
 public:
@@ -17,6 +18,7 @@ public:
     void ProcessInput();
     void Update();
     void Render();
+    void Restart(bool keepScore);
 private:
     void CheckCollision();
     void HandleKeyStrokes();
@@ -28,6 +30,7 @@ private:
 
     InvaderManager m_invManger;
     CollisionDetection m_collisonDetection;
+    std::unique_ptr<BackGroundScreenManager> m_backgroundManager;
 
     Uint32 m_returnCode = 0;
 
@@ -40,4 +43,7 @@ private:
 
     int m_numberOfLives = 3;
     bool m_gameOver = false;
+    bool m_playerWon = false;
+
+    int m_score{0};
 };

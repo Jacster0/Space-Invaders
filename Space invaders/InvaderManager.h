@@ -16,9 +16,12 @@ public:
     void Move(float speedFactor);
     void Show();
     const std::vector<std::vector<std::shared_ptr<Invader>>>& GetInvaders();
-    void KillInvaderAtPosition(int xPos, int yPos);
+    int KillInvaderAtPosition(int xPos, int yPos);
     void Shoot();
     void CheckCollision(const std::shared_ptr<Defender>& defender);
+    void Reset();
+
+    int GetNumberOfAliveInvaders() const noexcept;
 private:
     using InvaderList = std::vector<std::shared_ptr<Invader>>;
 
@@ -34,4 +37,7 @@ private:
     float m_width{0};
     float m_height{0};
     bool m_canShoot{ true };
+
+    //There are 5 rows of invaders, and every row contains 11 invaders
+    int m_numberOfInvadersAlive = 5 * 11;
 };

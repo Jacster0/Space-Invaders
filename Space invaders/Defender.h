@@ -12,6 +12,7 @@ public:
     void Shoot() noexcept;
     void ResetProjectile();
     void ResetHit();
+    void Reset();
     std::shared_ptr<Projectile> GetProjectile() const noexcept;
     bool GetProjectileIsLaunched() const noexcept;
     const Rectangle& GetRectangle() const noexcept;

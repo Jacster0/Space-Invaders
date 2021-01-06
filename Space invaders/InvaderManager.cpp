@@ -102,25 +102,38 @@ const std::vector<std::vector<std::shared_ptr<Invader>>>& InvaderManager::GetInv
     return m_invaders;
 }
 
-void InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
-        auto& invader = m_invaders.at(yPos).at(xPos);
-        //kill the invader
-        invader->Kill();
+int InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
+    int score = 30;
 
-        if (yPos < m_invaders.size()-1) {
-            //If the dead invader was not a free invader, we cannot make the invader above a free invader,
-            //because the invader below the dead invader is still alive and blocking.
-            if (std::find(freeInvaders.begin(), freeInvaders.end(), invader) == freeInvaders.end()) {
-                return;
-            }
-        }
+    auto& invader = m_invaders.at(yPos).at(xPos);
+    //kill the invader
+    invader->Kill();
+    //decrement the number of alive invaders
+    m_numberOfInvadersAlive--;
 
-        //find the invader above the dead invader and make him free
-        auto abovePos = yPos - 1;
-        if (abovePos >= 0) {
-            auto& invaderAbove = m_invaders.at(abovePos).at(xPos);
-            freeInvaders.push_back(invaderAbove);
+    bool isFreeInvader = (std::find(freeInvaders.begin(), freeInvaders.end(), invader) != freeInvaders.end());
+
+    //Non-free invaders are harder to hit so we double the score
+    if (!isFreeInvader) {
+        score = 60;
+    }
+
+    if (yPos < m_invaders.size() - 1) {
+        //If the dead invader was not a free invader, we cannot make the invader above a free invader,
+        //because the invader below the dead invader is still alive and blocking.
+        if (!isFreeInvader) {
+            return score;
         }
+    }
+
+    //find the invader above the dead invader and make him free
+    auto abovePos = yPos - 1;
+    if (abovePos >= 0) {
+        auto& invaderAbove = m_invaders.at(abovePos).at(xPos);
+        freeInvaders.push_back(invaderAbove);
+    }
+
+    return score;
 }
 
 void InvaderManager::Shoot() {
@@ -157,6 +170,8 @@ void InvaderManager::CheckCollision(const std::shared_ptr<Defender>& defender) {
 
         //Check for collisions of the invader projectile and the defender body
         if (m_collisionDetection.CheckCollison(projectileRectangle, defender->GetRectangle())) {
+            //mark the defender as hit, removing one life from the defender
+            defender->Hit();
             //reset the projectile so that the invaders can shoot again
             m_dirtyInvader->ResetProjectile();
             m_canShoot = true;
@@ -180,4 +195,52 @@ void InvaderManager::CheckCollision(const std::shared_ptr<Defender>& defender) {
             return;
         }
     }
+}
+
+//Resets the InavderManager and all the Invaders that is managed by this manager
+void InvaderManager::Reset() {
+    //Make all invaders live again
+    m_numberOfInvadersAlive = 5 * 11;
+
+    
+    InvaderList invaderRowVector;
+    float yPos = 50.0f;
+    float xPos = 50.0f;
+
+    //reset the invaders position
+    for (int i = 0, yPos = 50; i < 5; i++) {
+        invaderRowVector = std::move(m_invaders.at(i));
+        for (size_t j = 0, xPos = 50; j < 11; j++) {
+            auto& invader = invaderRowVector.at(j);
+
+            //Reset the direction
+            invader->SetDirection(Direction::Right);
+            //Revive the invader
+            invader->Revive();
+            //reset the invaders positions
+            invader->GetRectangle().SetPoint({static_cast<float>(xPos), static_cast<float>(yPos)});
+            //reset the invaders projectile
+            invader->ResetProjectile();
+            //Advance the x position
+            xPos += 50;
+        }
+        m_invaders.at(i) = std::move(invaderRowVector);
+
+        // advance the y position
+        yPos += 50;
+    }
+
+    //clear the freeInvaders list
+    freeInvaders.clear();
+
+    //Add the last row to the freeInvaders list
+    const auto& lastRow = m_invaders.at(m_invaders.size() - 1);
+    std::copy(lastRow.begin(), lastRow.end(), std::back_inserter(freeInvaders));
+
+    //enable shooting
+    m_canShoot = true;
+}
+
+int InvaderManager::GetNumberOfAliveInvaders() const noexcept {
+    return m_numberOfInvadersAlive;
 }

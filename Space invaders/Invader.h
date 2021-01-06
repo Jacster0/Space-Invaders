@@ -15,9 +15,11 @@ public:
     void MoveY();
     void Shoot();
     void Kill();
+    void Revive();
 
     Point2D GetPoint() const noexcept { return m_rect.GetPoint(); }
-    const Rectangle& GetRectangle();
+    const Rectangle& GetRectangle() const;
+    Rectangle& GetRectangle();
 
     std::shared_ptr<Projectile> GetProjectile() const noexcept { return m_projectile; }
     bool GetProjectileIsLaunched() const noexcept { return projectileIsLaunched; }
