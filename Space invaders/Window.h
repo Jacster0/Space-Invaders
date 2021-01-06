@@ -18,5 +18,5 @@ private:
     static Window* m_instance;
     SDL_Window* m_windowSDL;
     static constexpr int m_width = 800;
-    static constexpr int m_height = 600;
+    static constexpr int m_height = 650;
 };
