@@ -36,12 +36,6 @@ void Rectangle::SetHeight(int value) {
 }
 
 void Rectangle::render(RenderFlags renderFlags) {
-    std::cout << "Rectangle" << std::endl;
-    std::cout << "Position:" << std::endl;
-    std::cout << GetPoint().to_string() << std::endl;
-    std::cout << "Width: " << width << std::endl;
-    std::cout << "Height: " << height << std::endl;
-
     Point2D pt = GetPoint();
     //set the color
     m_renderer->SetColor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
