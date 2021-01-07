@@ -80,7 +80,7 @@ InvaderManager::~InvaderManager() {
     }
 }
 
-void InvaderManager::Move(float speedFactor) {
+std::optional<int> InvaderManager::Move(float speedFactor) {
     auto timePoint = std::chrono::steady_clock::now;
     bool isDirectionToggled = false;
 
@@ -110,7 +110,8 @@ void InvaderManager::Move(float speedFactor) {
     }
 
     if (std::chrono::duration_cast<std::chrono::milliseconds>(dt) < m_limit) {
-        return;
+        //Just return an empty optional
+        return {};
     }
 
     //Decide which alien to render this move
@@ -145,11 +146,19 @@ void InvaderManager::Move(float speedFactor) {
             if (isDirectionToggled) {
                 invader->ToggleDirection();
                 invader->MoveY(m_stepY);
+
+                if (invader->GetPoint().y + invader->GetRectangle().GetHeight() >= m_groundLevel) {
+                    //an invader has hit the ground and succesfully invaded the planet
+                    //just return an arbitrary value to indicate that this even has occure.
+                    return 1;
+                }
             }
             invader->Move(m_stepX);
         }
     }
     m_timePoint = std::chrono::high_resolution_clock::now();
+
+    return {};
 }
 
 void InvaderManager::Show() {
@@ -292,7 +301,7 @@ void InvaderManager::CheckCollision(const std::shared_ptr<Defender>& defender) {
 
         //if the projectile missed the defender and all the barriers, reset the projectile so that 
         //the invaders can shoot again
-        else if (projectileRectangle.GetPoint().y + projectileRectangle.GetHeight() >= 600) {
+        else if (projectileRectangle.GetPoint().y + projectileRectangle.GetHeight() >= m_groundLevel) {
             m_dirtyInvader->ResetProjectile();
             m_canShoot = true;
             return;
