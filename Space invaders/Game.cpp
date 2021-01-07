@@ -31,17 +31,23 @@ Game::~Game() {
 
 int Game::Run() {
     while (true) {
-        if (m_playerWon) {
+        if (m_returnCode == SDL_WINDOWEVENT_CLOSE) {
+            return static_cast<int>(m_returnCode);
+        }
+
+        else if (m_playerWon) {
             SDL_Delay(500);
             //Wait 500ms, then restart the game, keep track of the score
             Restart(true);
         }
 
         else if (m_gameOver) {
+            //Wait 500ms, then handle the game over state
+            SDL_Delay(500);
             //display the game over scene
             m_returnCode = m_backgroundManager->ShowGameOverDisplay();
 
-            //If the returnCode is SDL_QUIT, exit immediately
+            //If the return code is ReturnCode::Quit, exit immediately
             if (m_returnCode == ReturnCode::Quit) {
                 return static_cast<int>(m_returnCode);
             }
@@ -88,7 +94,11 @@ void Game::Update() {
     }
 
     m_invManger->Shoot();
-    m_invManger->Move(m_speedFactor);
+    if (m_invManger->Move(m_speedFactor)) {
+        //This means the invaders succesfully invaded the planet, and the defender lost the game.
+        m_gameOver = true;
+        return;
+    }
 
     CheckCollision();
 
@@ -98,6 +108,8 @@ void Game::Update() {
 }
 
 void Game::Render() {
+    DrawGround();
+
     m_defender->Draw();
     if (m_defender->GetProjectileIsLaunched()) {
         m_defender->GetProjectile()->Draw();
@@ -119,6 +131,11 @@ void Game::Restart(bool playerWon) {
     m_returnCode = 0;
     m_gameOver = false;
     m_playerWon = false;
+}
+
+void Game::DrawGround() {
+    m_renderer->SetColor(0, 255, 0, 255);
+    SDL_RenderDrawLine(m_renderer->GetSDLRenderer(), 0, 582, Window::GetWidth(), 582);
 }
 
 void Game::CheckCollision() {
@@ -179,10 +196,6 @@ void Game::CheckCollision() {
 void Game::HandleKeyStrokes() {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
-    if (state[SDL_SCANCODE_ESCAPE]) {
-        m_returnCode = SDL_QUIT;
-    }
-
     if (state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]) {
         m_defender->Move(speed * static_cast<float>(m_speedFactor));
     }
@@ -202,8 +215,8 @@ void Game::HandleKeyStrokes() {
 void Game::HandleEvents() {
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent)) {
-        if (sdlEvent.type == SDL_QUIT) {
-            m_returnCode = SDL_QUIT;
+        if (sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE) {
+           m_returnCode = SDL_WINDOWEVENT_CLOSE;
         }
     }
 }

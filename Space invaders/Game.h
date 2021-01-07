@@ -19,6 +19,7 @@ public:
     void Update();
     void Render();
     void Restart(bool keepScore);
+    void DrawGround();
 private:
     void CheckCollision();
     void HandleKeyStrokes();
