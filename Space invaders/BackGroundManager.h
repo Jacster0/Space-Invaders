@@ -21,7 +21,7 @@ public:
     void DefenderHit();
     void ClearScreen();
     
-    void Reset();
+    void Reset(bool playerWon);
 private:
     void CopyTextureToRenderer(SDL_Texture* texture, int width, int height, int xPos, int yPos);
     SDL_Texture* CreateTextTexture(const std::string& text, int r = 255, int g = 255, int b = 255);

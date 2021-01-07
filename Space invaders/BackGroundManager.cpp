@@ -98,16 +98,17 @@ void BackGroundScreenManager::ClearScreen() {
     m_renderer->Clear();
 }
 
-void BackGroundScreenManager::Reset() {
-    m_defenderLivesRectangle.clear();
+void BackGroundScreenManager::Reset(bool playerWon) {
+    if (!playerWon) {
+        m_defenderLivesRectangle.clear();
 
-    auto xPos = 30.0f;
-   
-    for (int i = 0; i < m_numDefenderLives; i++) {
-        m_defenderLivesRectangle.push_back(Rectangle({ xPos,yPos }, 255, 0, 0, 255, width, height, m_renderer));
-        xPos += 60;
+        auto xPos = 30.0f;
+
+        for (int i = 0; i < m_numDefenderLives; i++) {
+            m_defenderLivesRectangle.push_back(Rectangle({ xPos,yPos }, 255, 0, 0, 255, width, height, m_renderer));
+            xPos += 60;
+        }
     }
-
     m_gameOverReturnCode = 0;
 }
 

@@ -13,7 +13,7 @@ Game::Game()  {
     Window* wnd = Window::Create();
     wnd->Show();
 
-    m_renderer = std::make_shared<Renderer>(*wnd,0, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    m_renderer = std::make_shared<Renderer>(*wnd,0, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     m_renderer->SetColor(0, 0, 0, 255);
     m_renderer->Clear();
 
@@ -107,14 +107,15 @@ void Game::Render() {
     m_renderer->Present();
 }
 
-void Game::Restart(bool keepScore) {
+void Game::Restart(bool playerWon) {
     m_defender->Reset();
     m_invManger->Reset();
-    m_backgroundManager->Reset();
+    m_backgroundManager->Reset(playerWon);
 
     //Everything that needs to be reset in the Game class
-    m_numberOfLives = 3;
-    m_score = (keepScore) ? m_score : 0;
+    m_numberOfLives = (playerWon) ? m_numberOfLives : 3;
+    m_score = (playerWon) ? m_score : 0;
+
     m_returnCode = 0;
     m_gameOver = false;
     m_playerWon = false;
