@@ -96,11 +96,11 @@ void InvaderManager::Move(float speedFactor) {
     }
 
     //Decide which alien to render this move
-    ++counter;
+    const auto index = (++counter % 2 == 0) ? 0 : 1;
 
-    m_alienLevel1textureToRender = (counter % 2 == 0) ? m_alienLevel1Textures[0] : m_alienLevel1Textures[1];
-    m_alienLevel2textureToRender = (counter % 2 == 0) ? m_alienLevel2Textures[0] : m_alienLevel2Textures[1];
-    m_alienLevel3textureToRender = (counter % 2 == 0) ? m_alienLevel3Textures[0] : m_alienLevel3Textures[1];
+    m_alienLevel1textureToRender = m_alienLevel1Textures[index];
+    m_alienLevel2textureToRender = m_alienLevel2Textures[index];
+    m_alienLevel3textureToRender = m_alienLevel3Textures[index];
    
     //Do the move logic
     for (const auto invaderRow : m_invaders) {
@@ -171,7 +171,7 @@ const std::vector<std::vector<std::shared_ptr<Invader>>>& InvaderManager::GetInv
 }
 
 int InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
-    int score = 30;
+    int score{};
 
     auto& invader = m_invaders.at(yPos).at(xPos);
     //kill the invader
@@ -179,11 +179,23 @@ int InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
     //decrement the number of alive invaders
     m_numberOfInvadersAlive--;
 
+    switch (invader->GetLevel()) {
+    case Level::One:
+        score = 10;
+        break;
+    case Level::Two:
+        score = 20;
+        break;
+    case Level::Three:
+        score = 30;
+        break;
+    }
+
     bool isFreeInvader = (std::find(freeInvaders.begin(), freeInvaders.end(), invader) != freeInvaders.end());
 
     //Non-free invaders are harder to hit so we double the score
     if (!isFreeInvader) {
-        score = 60;
+        score *= 2;
     }
 
     if (yPos < m_invaders.size() - 1) {
