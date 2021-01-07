@@ -15,16 +15,16 @@ void Invader::Draw() {
 }
 
 //Moves the invader in X direction
-void Invader::Move() {
+void Invader::Move(int step) {
     int oldX = m_rect.GetPoint().x;
     float screenCoordMax = 800.0f - m_rect.GetWidth();
     Point2D newLoc = m_rect.GetPoint();
 
     if (m_direction == Direction::Right) {
-        newLoc.x += speed;
+        newLoc.x += step;
     }
     else {
-        newLoc.x -= speed;
+        newLoc.x -= step;
     }
    
     //clamp the x position inside our screen coords
@@ -40,18 +40,19 @@ void Invader::Move() {
 }
 
 //Moves the Invader in Y direction
-void Invader::MoveY() {
+void Invader::MoveY(int step) {
     int oldX = m_rect.GetPoint().y;
     float screenCoordMin = 600 - m_rect.GetHeight();
     Point2D newLoc = m_rect.GetPoint();
 
-    newLoc.y += speedY;
+    newLoc.y += step;
    
     //clamp the y position inside our screen coords
     newLoc.y = std::clamp(newLoc.y, 0.0f, screenCoordMin);
     m_rect.SetPoint(newLoc);
 
 }
+
 //Resets the projectiles state and position
 void Invader::ResetProjectile() {
     auto loc = m_rect.GetPoint();

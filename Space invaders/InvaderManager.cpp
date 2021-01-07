@@ -10,12 +10,17 @@
 #include "SDL_image.h"
 #include "Renderer.h"
 
+using namespace std::chrono_literals;
+
 InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float width, float height) 
     :
     m_renderer(renderer),
     m_width(width),
     m_height(height)
 {
+    //set the initial limit value to 500 seconds
+    m_limit = 500ms;
+
     InvaderList invaderRowVector;
     //Load some textures
     m_alienLevel1Textures = {
@@ -76,22 +81,35 @@ InvaderManager::~InvaderManager() {
 }
 
 void InvaderManager::Move(float speedFactor) {
-    using namespace std::chrono_literals;
-
     auto timePoint = std::chrono::steady_clock::now;
     bool isDirectionToggled = false;
 
     auto dt = std::chrono::steady_clock::now() - m_timePoint;
 
+    if (m_numberOfInvadersAlive <= 37) {
+        m_limit = 250ms;
+    }
+
+    if (m_numberOfInvadersAlive <= 27) {
+        m_limit = 150ms;
+    }
+
+    if (m_numberOfInvadersAlive == 1) {
+        m_limit = 20ms;
+        //If there is only one aline left, reduce the step in Y led to make it a little bit
+        //easier for the player.
+        m_stepY = 25;
+    }
+
     for (const auto invaderRow : m_invaders) {
         for (auto invader : invaderRow) {
             if (invader->GetProjectileIsLaunched()) {
-                invader->GetProjectile()->Move(-1 * speedFactor);
+                invader->GetProjectile()->Move(-speedFactor);
             }
         }
     }
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(dt) < 500ms) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(dt) < m_limit) {
         return;
     }
 
@@ -116,14 +134,19 @@ void InvaderManager::Move(float speedFactor) {
                     isDirectionToggled = true;
                 }
             }
+        }
+    }
 
-            for (auto invader : invaderRow) {
-                if (isDirectionToggled) {
-                    invader->ToggleDirection();
-                    invader->MoveY();
-                }
-                invader->Move();
+    for (const auto invaderRow : m_invaders) {
+        for (auto invader : invaderRow) {
+            if (invader->IsDead()) {
+                continue;
             }
+            if (isDirectionToggled) {
+                invader->ToggleDirection();
+                invader->MoveY(m_stepY);
+            }
+            invader->Move(m_stepX);
         }
     }
     m_timePoint = std::chrono::high_resolution_clock::now();
@@ -281,7 +304,7 @@ void InvaderManager::CheckCollision(const std::shared_ptr<Defender>& defender) {
 void InvaderManager::Reset() {
     //Make all invaders live again
     m_numberOfInvadersAlive = 5 * 11;
-
+    m_limit = 500ms;
     
     InvaderList invaderRowVector;
     float yPos = 50.0f;

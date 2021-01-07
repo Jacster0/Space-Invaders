@@ -12,8 +12,8 @@ class Invader {
 public:
     Invader(const std::shared_ptr<Renderer>& renderer, float width, float height, float xCoord, float yCoord, Level level);
     void Draw();
-    void Move();
-    void MoveY();
+    void Move(int step);
+    void MoveY(int step);
     void Shoot();
     void Kill();
     void Revive();
@@ -39,9 +39,7 @@ private:
     Direction m_direction = Direction::Right;
     Rectangle m_rect;
     std::shared_ptr<Projectile> m_projectile;
-    int speed = 10;
-    int speedY = 80;
-
+   
     bool m_isDead = false;
     bool projectileIsLaunched = false;
     Level m_alienLevel;

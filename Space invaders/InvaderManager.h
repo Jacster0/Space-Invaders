@@ -55,4 +55,8 @@ private:
     std::shared_ptr<Renderer> m_renderer;
 
     unsigned long counter = 0;
+    std::chrono::milliseconds m_limit;
+
+    static constexpr int m_stepX = 10;
+    int m_stepY = 50;
 };
