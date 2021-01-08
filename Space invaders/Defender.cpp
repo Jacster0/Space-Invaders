@@ -17,10 +17,10 @@ Defender::~Defender() {
     SDL_DestroyTexture(m_defenderTexture);
 }
 
-void Defender::Move(float speed) {
+void Defender::Move(float step) {
     int oldX = m_rect.GetPoint().x;
     Point2D newLoc = m_rect.GetPoint();
-    newLoc.x += speed;
+    newLoc.x += step;
 
     //clamp the x position inside our screen coords
     newLoc.x = std::clamp(newLoc.x, 0.0f, 800.0f- m_rect.GetWidth());

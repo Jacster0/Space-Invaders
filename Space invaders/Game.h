@@ -39,7 +39,7 @@ private:
     Uint32 m_lastTime = 0;
     Uint32 m_speedFactor = 0;
 
-    static constexpr float speed = 0.5f;
+    static constexpr float step = 0.5f;
     bool canShoot = true;
 
     int m_numberOfLives = 3;

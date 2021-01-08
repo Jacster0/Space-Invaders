@@ -10,7 +10,7 @@ public:
     Defender(const std::shared_ptr<Renderer>& renderer);
     ~Defender();
 
-    void Move(float speed);
+    void Move(float step);
     void Draw();
     void Shoot() noexcept;
     void ResetProjectile();

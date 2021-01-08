@@ -197,11 +197,11 @@ void Game::HandleKeyStrokes() {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
     if (state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]) {
-        m_defender->Move(speed * static_cast<float>(m_speedFactor));
+        m_defender->Move(step * static_cast<float>(m_speedFactor));
     }
 
     if (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]) {
-        m_defender->Move(-speed * static_cast<float>(m_speedFactor));
+        m_defender->Move(-step * static_cast<float>(m_speedFactor));
     }
     
     if (canShoot) {
