@@ -7,10 +7,10 @@
 Defender::Defender(const std::shared_ptr<Renderer>& renderer)
     :
     m_renderer(renderer),
-    m_rect({ 400, 550 }, 255, 0, 0, 255, 32, 32, renderer),
-    m_projectile(std::make_shared<Projectile>(m_rect.GetPoint().x,550, renderer, 0, 255, 0))
+    m_rect({ 400, 750 }, 255, 0, 0, 255, 32, 32, renderer),
+    m_projectile(std::make_shared<Projectile>(m_rect.GetPoint().x + m_rect.GetWidth()/2.0f, 700, renderer, 0, 255, 0))
 {
-    m_defenderTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Defender.png)");
+    m_defenderTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\Defender.png)");
 }
 
 Defender::~Defender() {
@@ -60,7 +60,7 @@ void Defender::ResetHit() {
 }
 
 void Defender::Reset() {
-    m_rect.SetPoint({ 400, 550 });
+    m_rect.SetPoint({ 400, 750 });
     ResetProjectile();
     ResetHit();
 }

@@ -3,6 +3,8 @@
 #include "SDL.h"
 #include "include/SDL_ttf.h"
 #include "SDL_image.h"
+#include "Star.h"
+#include <random>
 
 BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>& renderer, int numLives)
     :
@@ -12,7 +14,11 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     auto xPos = 30.0f;
    
     for (int i = 0; i < m_numDefenderLives; i++) {
-        m_defenderLivesRectangle.push_back(Rectangle({ xPos,yPos }, 255, 0, 0, 255, width, height, m_renderer));
+        m_defenderLives.push_back(std::make_unique<Rectangle>(
+            Point2D(xPos,m_yPos), 
+            255, 0, 0, 255, 
+            m_width, m_height,
+            m_renderer));
         xPos += 60;
     }
 
@@ -26,7 +32,9 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     m_playAgainOrQuitTexture = CreateTextTexture("Press Enter to play again or Escape to quit.");
 
     //Create player life texture
-    m_playerLivesTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Defender.png)");
+    m_playerLivesTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\Defender.png)");
+
+    CreateStarField();
 }
 
 BackGroundScreenManager::~BackGroundScreenManager() {
@@ -41,10 +49,14 @@ BackGroundScreenManager::~BackGroundScreenManager() {
 
 void BackGroundScreenManager::Show() {
    
-    for (auto& rect : m_defenderLivesRectangle) {
-        auto point = rect.GetPoint();
+    DrawStarField();
 
-        CopyTextureToRenderer(m_playerLivesTexture, rect.GetWidth(), rect.GetHeight(), point.x, point.y);
+    for (const auto& shape : m_defenderLives) {
+        if (auto rect = dynamic_cast<Rectangle*>(shape.get())) {
+            auto point = rect->GetPoint();
+
+            CopyTextureToRenderer(m_playerLivesTexture, rect->GetWidth(), rect->GetHeight(), point.x, point.y);
+        }
     }
 
     //Print the score and highScore to the Console window  
@@ -89,7 +101,7 @@ void BackGroundScreenManager::HandleGameOverUserInput() {
 void BackGroundScreenManager::DefenderHit() {
     //The defender was hit, so remove one of the defenderLivesRectangles to indicate to the player that he
     //is down one life.
-    m_defenderLivesRectangle.pop_back();
+    m_defenderLives.pop_back();
 }
 
 //Clears the screen with the default color black
@@ -98,18 +110,79 @@ void BackGroundScreenManager::ClearScreen() {
     m_renderer->Clear();
 }
 
+void BackGroundScreenManager::CreateStarField() {
+    std::random_device device;
+    std::default_random_engine rng(device());
+
+    //Generate between 10 to 20 stars
+    std::uniform_int_distribution<int>    numStarsDist(5, 11);
+    std::uniform_int_distribution<int>    innerCircleRadius(7, 13);
+    std::uniform_int_distribution<int>    outerCircleRadius(16, 22);
+    std::uniform_real_distribution<float> starXPos(5, 770);
+    std::uniform_real_distribution<float> starYPos(100, 150);
+    std::uniform_int_distribution<int>    numFlares(4, 11);
+
+    const auto numStars = numStarsDist(rng);
+
+    for (int i = 0; i < numStars; i++) {
+        m_starField.push_back(std::make_unique<Star>(
+            Point2D(starXPos(rng), starYPos(rng)),
+            innerCircleRadius(rng),
+            outerCircleRadius(rng),
+            numFlares(rng),
+            m_renderer
+            ));
+    }
+
+    for (int i = 0; i < numStars; i++) {
+        for (auto& shape : m_starField) {
+            if (auto star = dynamic_cast<Star*>(shape.get())) {
+                m_originalStars.push_back(*star);
+            }
+        }
+    }
+}
+
+void BackGroundScreenManager::DrawStarField() {
+    for (const auto& shape : m_starField) {
+        shape->render(RenderFlag::OutLine);
+    }
+}
+
+void BackGroundScreenManager::UpdateStarField() {
+    ScaleStarField();
+}
+
 void BackGroundScreenManager::Reset(bool playerWon) {
     if (!playerWon) {
-        m_defenderLivesRectangle.clear();
+        m_defenderLives.clear();
 
         auto xPos = 30.0f;
 
         for (int i = 0; i < m_numDefenderLives; i++) {
-            m_defenderLivesRectangle.push_back(Rectangle({ xPos,yPos }, 255, 0, 0, 255, width, height, m_renderer));
+            m_defenderLives.push_back(std::make_unique<Rectangle>(
+                Point2D(xPos,m_yPos), 
+                255, 0, 0, 255, 
+                m_width, m_height,
+                m_renderer));
             xPos += 60;
         }
     }
     m_gameOverReturnCode = 0;
+}
+
+void BackGroundScreenManager::ScaleStarField() {
+    //Im using a sine wave to create a nice motion of upscaling/downscaling the stars
+    //Amplitude * sin(2 * pi * frequency * time) + phase
+    const float timeInSeconds = static_cast<float>(SDL_GetTicks()) / 1000.0f;
+    const float scaleFactor = m_sineWaveAmplitude * sin(twoPi * m_sineWaveFrequency * timeInSeconds) + m_sineWavePhase;
+
+    for (int i = 0; i < m_starField.size(); i++) {
+        if (Star* star = dynamic_cast<Star*>(m_starField.at(i).get())) {
+            star->SetScale(1.0f * scaleFactor);
+            star->Scale(m_originalStars.at(i));
+        }
+    }
 }
 
 //Copies the texture to the renderer
@@ -125,7 +198,7 @@ void BackGroundScreenManager::CopyTextureToRenderer(SDL_Texture* texture, int wi
 
 //Creates a SDL_Texture containing the text given as the argument
 SDL_Texture* BackGroundScreenManager::CreateTextTexture(const std::string& text, int r, int g, int b) {
-    auto font = TTF_OpenFont(R"(Resources\arial.ttf)", 46);
+    auto font = TTF_OpenFont(R"(Resources\Fonts\arial.ttf)", 46);
     SDL_Color textColor = { r,g,b };
       
     
@@ -139,6 +212,8 @@ SDL_Texture* BackGroundScreenManager::CreateTextTexture(const std::string& text,
 }
 
 void BackGroundScreenManager::Update(int score) {
+    UpdateStarField();
+
     m_playerScore = score;
 
     if (m_playerScore > m_playerHighscore) {

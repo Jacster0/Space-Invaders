@@ -15,15 +15,16 @@ public:
     Game();
     ~Game();
     int Run();
+private:
     void ProcessInput();
     void Update();
     void Render();
     void Restart(bool keepScore);
     void DrawGround();
-private:
     void CheckCollision();
     void HandleKeyStrokes();
     void HandleEvents();
+
     SDL_Event m_event;
 
     std::shared_ptr<Renderer> m_renderer;

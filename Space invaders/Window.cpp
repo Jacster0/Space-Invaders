@@ -13,7 +13,8 @@ Window* Window::Create() {
 
 void Window::Destroy() {
     SDL_DestroyWindow(m_instance->m_windowSDL);
-    m_instance->~Window();
+
+    delete m_instance;
     m_instance = nullptr;
 }
 

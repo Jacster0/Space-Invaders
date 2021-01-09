@@ -21,7 +21,7 @@ void Projectile::Draw() {
 }
 
 void Projectile::SetXPos(float pos) noexcept {
-    m_rect.SetPoint({pos, 550});
+    m_rect.SetPoint({pos, 750});
 }
 
 void Projectile::SetPos(float xPos, float yPos) noexcept {

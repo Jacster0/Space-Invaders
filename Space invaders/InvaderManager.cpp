@@ -24,18 +24,18 @@ InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float 
     InvaderList invaderRowVector;
     //Load some textures
     m_alienLevel1Textures = {
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel1First.png)"),
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel1Second.png)")
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel1First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel1Second.png)")
     };
 
     m_alienLevel2Textures = {
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel2First.png)"),
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel2Second.png)")
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel2First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel2Second.png)")
     };
 
     m_alienLevel3Textures = {
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel3First.png)"),
-        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\AlienLevel3Second.png)")
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel3First.png)"),
+        IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\AlienLevel3Second.png)")
     };
 
     m_alienLevel1textureToRender = m_alienLevel1Textures[0];
@@ -44,7 +44,7 @@ InvaderManager::InvaderManager(const std::shared_ptr<Renderer>& renderer, float 
     
     Level alienLevel = Level::Three;
 
-    for (int i = 0, yPos = 50; i < 5; i++) {
+    for (int i = 0, yPos = 250; i < 5; i++) {
         for (size_t j = 0, xPos = 50; j < 11; j++) {
 
             if (i < 1) {
@@ -316,11 +316,11 @@ void InvaderManager::Reset() {
     m_limit = 500ms;
     
     InvaderList invaderRowVector;
-    float yPos = 50.0f;
+    float yPos = 250.0f;
     float xPos = 50.0f;
 
     //reset the invaders position
-    for (int i = 0, yPos = 50; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         invaderRowVector = std::move(m_invaders.at(i));
         for (size_t j = 0, xPos = 50; j < 11; j++) {
             auto& invader = invaderRowVector.at(j);

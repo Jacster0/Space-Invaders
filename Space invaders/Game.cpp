@@ -5,7 +5,7 @@
 #include "BackGroundManager.h"
 #include "SDL_image.h"
 
-Game::Game()  {
+Game::Game() {
     SDL_Init(SDL_INIT_EVERYTHING);
     //init the SDL2_Image library
     IMG_Init(IMG_INIT_PNG);
@@ -109,13 +109,13 @@ void Game::Update() {
 
 void Game::Render() {
     DrawGround();
+    m_backgroundManager->Show();
 
     m_defender->Draw();
     if (m_defender->GetProjectileIsLaunched()) {
         m_defender->GetProjectile()->Draw();
     }
     m_invManger->Show();
-    m_backgroundManager->Show();
     m_renderer->Present();
 }
 
@@ -135,7 +135,7 @@ void Game::Restart(bool playerWon) {
 
 void Game::DrawGround() {
     m_renderer->SetColor(0, 255, 0, 255);
-    SDL_RenderDrawLine(m_renderer->GetSDLRenderer(), 0, 582, Window::GetWidth(), 582);
+    SDL_RenderDrawLine(m_renderer->GetSDLRenderer(), 0, 782, Window::GetWidth(), 782);
 }
 
 void Game::CheckCollision() {

@@ -58,9 +58,9 @@ private:
     unsigned long counter = 0;
     std::chrono::milliseconds m_limit;
     
-    //The defenders upper left corner is at y location 550, and the defenderts height is 32 pixels
-    //So the groundLevel which the aliens are aiming for will be at location 550 + 32 = 582
-    static constexpr int m_groundLevel = 550 + 32;
+    //The defenders upper left corner is at y location 750, and the defenderts height is 32 pixels
+    //So the groundLevel which the aliens are aiming for will be at location 750 + 32 = 782
+    static constexpr int m_groundLevel = 782;
 
     static constexpr int m_stepX = 10;
     int m_stepY = 50;
