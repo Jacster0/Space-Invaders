@@ -153,6 +153,14 @@ void BackGroundScreenManager::UpdateStarField() {
     ScaleStarField();
 }
 
+int BackGroundScreenManager::GetHighScore() const noexcept {
+    return m_playerHighscore;
+}
+
+void BackGroundScreenManager::SetHighScore(int highScore) noexcept {
+    m_playerHighscore = highScore;
+}
+
 void BackGroundScreenManager::Reset(bool playerWon) {
     if (!playerWon) {
         m_defenderLives.clear();

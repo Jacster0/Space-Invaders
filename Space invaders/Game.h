@@ -24,6 +24,8 @@ private:
     void CheckCollision();
     void HandleKeyStrokes();
     void HandleEvents();
+    void SaveHighScoreToFile(int highScore);
+    int LoadHighScore();
 
     SDL_Event m_event;
 
@@ -43,9 +45,10 @@ private:
     static constexpr float step = 0.5f;
     bool canShoot = true;
 
-    int m_numberOfLives = 3;
+    int  m_numberOfLives = 3;
     bool m_gameOver = false;
     bool m_playerWon = false;
+    bool m_resetHighScore = false;
 
     int m_score{0};
 };

@@ -5,6 +5,8 @@
 #include "BackGroundManager.h"
 #include "SDL_image.h"
 
+#include <fstream>
+
 Game::Game() {
     SDL_Init(SDL_INIT_EVERYTHING);
     //init the SDL2_Image library
@@ -22,6 +24,8 @@ Game::Game() {
     m_backgroundManager = std::make_unique<BackGroundScreenManager>(m_renderer, m_numberOfLives);
 
     m_lastTime = SDL_GetTicks();
+
+    m_backgroundManager->SetHighScore(LoadHighScore());
 }
 
 Game::~Game() {
@@ -32,6 +36,10 @@ Game::~Game() {
 int Game::Run() {
     while (true) {
         if (m_returnCode == SDL_WINDOWEVENT_CLOSE) {
+            if (m_resetHighScore) {
+                m_backgroundManager->SetHighScore(0);
+            }
+            SaveHighScoreToFile(m_backgroundManager->GetHighScore());
             return static_cast<int>(m_returnCode);
         }
 
@@ -49,6 +57,10 @@ int Game::Run() {
 
             //If the return code is ReturnCode::Quit, exit immediately
             if (m_returnCode == ReturnCode::Quit) {
+                if (m_resetHighScore) {
+                    m_backgroundManager->SetHighScore(0);
+                }
+                SaveHighScoreToFile(m_backgroundManager->GetHighScore());
                 return static_cast<int>(m_returnCode);
             }
             else if (m_returnCode == ReturnCode::PlayAgain) {
@@ -131,6 +143,7 @@ void Game::Restart(bool playerWon) {
     m_returnCode = 0;
     m_gameOver = false;
     m_playerWon = false;
+    m_resetHighScore = false;
 }
 
 void Game::DrawGround() {
@@ -203,6 +216,10 @@ void Game::HandleKeyStrokes() {
     if (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]) {
         m_defender->Move(-step * static_cast<float>(m_speedFactor));
     }
+
+    if (state[SDL_SCANCODE_R]) {
+        m_resetHighScore = true;
+    }
     
     if (canShoot) {
         if (state[SDL_SCANCODE_SPACE]) {
@@ -219,4 +236,22 @@ void Game::HandleEvents() {
            m_returnCode = SDL_WINDOWEVENT_CLOSE;
         }
     }
+}
+
+void Game::SaveHighScoreToFile(int highScore) {
+    std::ofstream out;
+    out.open(R"(Resources\SaveGame\SaveGame.bin)", std::ios::out | std::ios::binary);
+    out.write(reinterpret_cast<const char*>(&highScore), sizeof(highScore));
+}
+
+int Game::LoadHighScore() {
+    int highScore{};
+
+    std::ifstream in(R"(Resources\SaveGame\SaveGame.bin)", std::ios::in | std::ios::binary);
+
+    if (in.is_open()) {
+        in.read(reinterpret_cast<char*>(&highScore), sizeof(highScore));
+    }
+
+    return highScore;
 }

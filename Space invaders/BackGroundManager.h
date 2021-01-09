@@ -28,6 +28,9 @@ public:
     void DrawStarField();
     void UpdateStarField();
     
+    int GetHighScore() const noexcept; 
+    void SetHighScore(int highScore) noexcept;
+
     void Reset(bool playerWon);
 private:
     void ScaleStarField();
