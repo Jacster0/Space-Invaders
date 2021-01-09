@@ -42,7 +42,7 @@ void Invader::Move(int step) {
 //Moves the Invader in Y direction
 void Invader::MoveY(int step) {
     int oldX = m_rect.GetPoint().y;
-    float screenCoordMin = 600 - m_rect.GetHeight();
+    float screenCoordMin = 850 - m_rect.GetHeight();
     Point2D newLoc = m_rect.GetPoint();
 
     newLoc.y += step;
