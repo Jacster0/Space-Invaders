@@ -21,10 +21,9 @@ void Circle::SetRadius(int value) {
 }
 
 void Circle::render(RenderFlags renderFlags) {
-    std::cout << "Circle" << std::endl;
-    std::cout << "Position:" << std::endl;
-    std::cout << GetPoint().to_string() << std::endl;
-    std::cout << "Radius: " << radius << std::endl;
+    if ((renderFlags & RenderFlag::Fill) == RenderFlag::Fill) {
+        throw std::exception("Circle does not support the Renderflag::Fill mode");
+    }
 
     Point2D pt = GetPoint();
     //set the color

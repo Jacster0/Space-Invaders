@@ -35,11 +35,9 @@ void Triangle::SetHeight(int value) {
 }
 
 void Triangle::render(RenderFlags renderFlags) {
-    std::cout << "Triangle" << std::endl;
-    std::cout << "Position:" << std::endl;
-    std::cout << GetPoint().to_string() << std::endl;
-    std::cout << "Base: " << base << std::endl;
-    std::cout << "Height: " << height << std::endl;
+    if ((renderFlags & RenderFlag::Fill) == RenderFlag::Fill) {
+        throw std::exception("Circle does not support the Renderflag::Fill mode");
+    }
 
     Point2D pt = GetPoint();
     //set the color
