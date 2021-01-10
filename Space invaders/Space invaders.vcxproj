@@ -134,12 +134,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\C++ UNI Course\Lab6\SDL\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;D:\C++ UNI Course\Lab6\SDL\SDL_IMAGE\SDL2_image-2.0.5\include;D:\C++ UNI Course\Lab6\SDL\SDL_TTF\SDL2_ttf-2.0.15;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\C++ UNI Course\Lab6\SDL\SDL_IMAGE\SDL2_image-2.0.5\lib\x64;D:\C++ UNI Course\Lab6\SDL\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;D:\C++ UNI Course\Lab6\SDL\SDL_TTF\SDL2_ttf-2.0.15\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
