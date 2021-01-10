@@ -26,9 +26,18 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     TTF_Init();
 
     //create highscore and score textures
-    m_playerScoreTexture = CreateTextTexture("Score:");
+    SDL_Rect rect;
+    rect.w = 400;
+    rect.h = 100;
+    rect.x = 110;
+    rect.y = 0;
+
+    m_font = TTF_OpenFont(R"(Resources\Fonts\arial.ttf)", 46);
+
+    //m_playerScoreValueTexture = this->CreateTextTexture(std::to_string(m_playerScore));
+    m_playerScoreTexture     = CreateTextTexture("Score:");
     m_playerHighscoreTexture = CreateTextTexture("Highscore:");
-    m_gameOverTexture = CreateTextTexture("GAME OVER", 255, 0, 0);
+    m_gameOverTexture        = CreateTextTexture("GAME OVER", 255, 0, 0);
     m_playAgainOrQuitTexture = CreateTextTexture("Press Enter to play again or Escape to quit.");
 
     //Create player life texture
@@ -59,15 +68,18 @@ void BackGroundScreenManager::Show() {
         }
     }
 
-    //Print the score and highScore to the Console window  
+    //Print the score and highScore to the window  
     CopyTextureToRenderer(m_playerScoreTexture, 100, 50, 0,0);
     CopyTextureToRenderer(m_playerHighscoreTexture,150, 50, 200, 0);
-   
-    auto playerScoreValueTexture = CreateTextTexture(std::to_string(m_playerScore));
-    CopyTextureToRenderer(playerScoreValueTexture, 50, 50, 110, 0);
 
-    auto playerHighscoreValueTexture = CreateTextTexture(std::to_string(m_playerHighscore));
-    CopyTextureToRenderer(playerHighscoreValueTexture, 50, 50, 360, 0);
+    auto playerHighScoreValueTexture = CreateTextTexture(std::to_string(m_playerHighscore));
+    CopyTextureToRenderer(playerHighScoreValueTexture, 80, 50, 350, 0);
+
+    auto playerScoreValueTexture = CreateTextTexture(std::to_string(m_playerScore));
+    CopyTextureToRenderer(playerScoreValueTexture, 80, 50, 110, 0);
+
+    SDL_DestroyTexture(playerScoreValueTexture);
+    SDL_DestroyTexture(playerHighScoreValueTexture);
 }
 
 int BackGroundScreenManager::ShowGameOverDisplay() {
@@ -181,9 +193,9 @@ void BackGroundScreenManager::Reset(bool playerWon) {
 
 void BackGroundScreenManager::ScaleStarField() {
     //Im using a sine wave to create a nice motion of upscaling/downscaling the stars
-    //Amplitude * sin(2 * pi * frequency * time) + phase
+    //Amplitude * sin(2 * pi * frequency * time + phase) + 
     const float timeInSeconds = static_cast<float>(SDL_GetTicks()) / 1000.0f;
-    const float scaleFactor = m_sineWaveAmplitude * sin(twoPi * m_sineWaveFrequency * timeInSeconds) + m_sineWavePhase;
+    const float scaleFactor = m_sineWaveAmplitude * sin(twoPi * m_sineWaveFrequency * timeInSeconds + m_sineWavePhase) + m_sineWaveOffsetY;
 
     for (int i = 0; i < m_starField.size(); i++) {
         if (Star* star = dynamic_cast<Star*>(m_starField.at(i).get())) {
@@ -206,15 +218,13 @@ void BackGroundScreenManager::CopyTextureToRenderer(SDL_Texture* texture, int wi
 
 //Creates a SDL_Texture containing the text given as the argument
 SDL_Texture* BackGroundScreenManager::CreateTextTexture(const std::string& text, int r, int g, int b) {
-    auto font = TTF_OpenFont(R"(Resources\Fonts\arial.ttf)", 46);
     SDL_Color textColor = { r,g,b };
-      
-    
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text.data(), textColor);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer->GetSDLRenderer(), surface);
+
+    auto surf = TTF_RenderText_Solid(m_font, text.c_str(), { 255,255,255 });
+    auto texture = SDL_CreateTextureFromSurface(m_renderer->GetSDLRenderer(), surf);
 
     //destroy the surface since we have no further use of it
-    SDL_FreeSurface(surface);
+    SDL_FreeSurface(surf);
 
     return texture;
 }

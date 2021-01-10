@@ -5,6 +5,7 @@
 #include "Shape.h"
 #include <numbers>
 #include "Star.h"
+#include "include/SDL_ttf.h"
 
 //This class handles screen related background stuff (for example drawing the background)
 //And handling the game over aftermath
@@ -43,11 +44,13 @@ private:
     std::vector<std::unique_ptr<Shape>> m_starField;
     std::vector<Star> m_originalStars;
 
-    SDL_Texture* m_playerScoreTexture     = nullptr;
-    SDL_Texture* m_playerHighscoreTexture = nullptr;
-    SDL_Texture* m_gameOverTexture        = nullptr;
-    SDL_Texture* m_playAgainOrQuitTexture = nullptr;
-    SDL_Texture* m_playerLivesTexture     = nullptr;
+    SDL_Texture* m_playerScoreTexture      = nullptr;
+    SDL_Texture* m_playerHighscoreTexture  = nullptr;
+    SDL_Texture* m_gameOverTexture         = nullptr;
+    SDL_Texture* m_playAgainOrQuitTexture  = nullptr;
+    SDL_Texture* m_playerLivesTexture      = nullptr;
+
+    TTF_Font* m_font = nullptr;
 
     int m_numDefenderLives = 0;
     int m_playerScore = 0;
@@ -60,9 +63,10 @@ private:
     constexpr static auto m_width = 30;
     constexpr static auto m_height = 30;
 
-    constexpr static auto m_sineWaveAmplitude = 2.0f;
+    constexpr static auto m_sineWaveAmplitude = 0.50f;
     constexpr static auto m_sineWaveFrequency = 0.25f; 
-    constexpr static auto m_sineWavePhase     = 0.5f;
+    constexpr static auto m_sineWavePhase     = std::numbers::pi_v<float>;
+    constexpr static auto m_sineWaveOffsetY   = 1.0f;
 
     constexpr static auto twoPi = 2.0f * std::numbers::pi_v<float>;
 };
