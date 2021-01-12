@@ -1,0 +1,61 @@
+Class Shape:
+Acts a the Abstract base class for all other shapes. It has a pure virtual function render() and some getters and setters for changing the Shapes color
+and position.
+
+Class Circle:
+This class inherits from the Shape class and represents a circle that can be drawn to the screen by callin the render() member function
+
+Class Star:
+This class inherits the Shape class and is used to represent a Star than can be drawn to the screen by calling the render() member function.
+This class implicitly using two circles to create the star. It also offers a member function Scale() which can scale a star up or down.
+
+Class Triangle:
+This class inherits from the Shape class and is used to represent a trianle that can be drawn to the screen by calling the render() function.
+
+Class Rectangle:
+This class inherits from the Shape class and is used to represent a Rectangle that can be drawn to the screen by callin the render() member function.
+
+Class BackGroundScreenManager:
+This class is reponsible for showing and updating everything that happens in the background of the screen.
+For example this class is drawing and handling the Game Over screen, Creates and draws a starfield to the screen,
+it handles drawing the highscore, score and the defenders lives to the screen.
+
+Class CollisionDetection:
+This class is used to determine if two rectangles are overlapping/colliding. This class is useful when we want to 
+know if the player hit an invader with its projectile. (both the projectile and invader are represented as rectangles)
+
+Class Defender:
+Represents a single defender. This class is used by the game class to make it playable.
+This class is reponsible for shooting, moving and drawing itself to the screen. It also has a function to check whether it has been hit
+by a defender.
+
+Class Invader:
+Represents a single Invader. This class is used by the InvaderManager class described next. This class is responsible for Shooting, 
+Moving (both in x and y), Get and Set the invader level. It has two functions called Kill and Revive which are useful for the InvaderManager class.
+It also has a function ToggleDirection() which will toggle what direction the invader will move in (left or right).
+
+Class InvaderManager:
+This class is used to create and handle the matrix of Invaders. It offers functionality like moving and drawing all invaders, It can check Collisions
+between any invader, It can kill a invader at a given position, and it can make a random invader shoot. It is the Game class responsibility to make
+sure that this class logic is used the right way. 
+
+Class Point2D
+Represents a 2D point in space. It is mainly used by the Shape classes to construct their geometry. 
+
+Class Projectile:
+Represents a single projectile. It can move and draw the projectile, set the Position and retreive the underlying rectangle that it is made up off.
+
+Class Renderer:
+Acts as a simple wrapper over the SDL_Renderer struct. It uses RAII for proper resource management over the SDL_Renderer.
+
+Class Window: Acts as a simple wrapper over the SDL_Window struct. The class is represented as a singleton and offers two functions, 
+Create and Destroy that should be used for proper resource management. because this class creates the SDL_Window 
+as hidden by default, it also offers a function Show() which is used to show the window. 
+
+Class Game:
+Responsible for the Game logic. 
+This class ties all other classes together to perform the logic of our game. This class is responsible for keeping track of the games state,
+updating the game, drawing the game, handling events and user inputs. It keeps track of the game score and highscore.
+
+main function:
+Creates and run the Game. 

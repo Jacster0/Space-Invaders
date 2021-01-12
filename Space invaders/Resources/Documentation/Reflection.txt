@@ -1,0 +1,14 @@
+In order to run the Space Invaders project you need: C++20, SDL2, SDL_TTF and SDL_Image
+All the textures used in the game are made by me using GIMP.
+
+What did you learn?
+I learned a lot more of how I can use the SDL2 library to create games.
+I learned to use a sine function to get a nice upscaling/downscaling of the starfield that is rendered in the background.
+
+
+What was difficult in the lab?
+Calculating the Collision detection method. I wasn't sure how I would implement it in just one or few iterations.
+Getting the sine function to work properly.
+
+I used Visual Studio 2019.
+I probably spent at least 30 hours, maybe more.
