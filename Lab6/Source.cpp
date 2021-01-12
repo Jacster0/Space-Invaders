@@ -105,23 +105,23 @@ int main() {
 
             //print the data of the first node
             if (auto node = dll.nodeAt(0)) {
-                std::cout << node->getData() << std::endl;
+                std::cout << "Data: " << node->getData() << std::endl;
             }
             else {
                 std::cout << "Could not find node" << std::endl;
             }
 
-            auto index = dll.search(nodeVector[0]);
+            auto index = dll.search(nodeVector[2]);
             //print the index of some node if it exists
             if (index != -1) {
-                std::cout << index << std::endl;
+                std::cout << "Index of node: " << index << std::endl;
             }
             else {
                 std::cout << "Could not find node" << std::endl;
             }
 
             //print the size of the list
-            std::cout << dll.size() << std::endl;
+            std::cout << "Size of list: " << dll.size() << std::endl;
         }
     }
 
