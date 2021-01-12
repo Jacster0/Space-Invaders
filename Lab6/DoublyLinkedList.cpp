@@ -25,10 +25,6 @@ DoublyLinkedList::~DoublyLinkedList() {
     Node* node = head;
     int i = 0;
 
-    if (!head) {
-        delete tail;
-        tail = nullptr;
-    }
     while (i++ != length +2) {
         Node* old = node;
         if (node) {
