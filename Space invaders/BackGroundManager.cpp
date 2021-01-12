@@ -34,7 +34,6 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
 
     m_font = TTF_OpenFont(R"(Resources\Fonts\arial.ttf)", 46);
 
-    //m_playerScoreValueTexture = this->CreateTextTexture(std::to_string(m_playerScore));
     m_playerScoreTexture     = CreateTextTexture("Score:");
     m_playerHighscoreTexture = CreateTextTexture("Highscore:");
     m_gameOverTexture        = CreateTextTexture("GAME OVER", 255, 0, 0);
@@ -60,6 +59,7 @@ void BackGroundScreenManager::Show() {
    
     DrawStarField();
 
+    //Draw the players life textures
     for (const auto& shape : m_defenderLives) {
         if (auto rect = dynamic_cast<Rectangle*>(shape.get())) {
             auto point = rect->GetPoint();
@@ -126,7 +126,7 @@ void BackGroundScreenManager::CreateStarField() {
     std::random_device device;
     std::default_random_engine rng(device());
 
-    //Generate between 10 to 20 stars
+    //Generate some stars with random sizes, flares and positions
     std::uniform_int_distribution<int>    numStarsDist(5, 11);
     std::uniform_int_distribution<int>    innerCircleRadius(7, 13);
     std::uniform_int_distribution<int>    outerCircleRadius(16, 22);
@@ -146,6 +146,7 @@ void BackGroundScreenManager::CreateStarField() {
             ));
     }
 
+    //Keep a copy of all the original, unnaltered stars
     for (int i = 0; i < numStars; i++) {
         for (auto& shape : m_starField) {
             if (auto star = dynamic_cast<Star*>(shape.get())) {
@@ -193,7 +194,7 @@ void BackGroundScreenManager::Reset(bool playerWon) {
 
 void BackGroundScreenManager::ScaleStarField() {
     //Im using a sine wave to create a nice motion of upscaling/downscaling the stars
-    //Amplitude * sin(2 * pi * frequency * time + phase) + 
+    //Amplitude * sin(2 * pi * frequency * time + phase) + offsetInY
     const float timeInSeconds = static_cast<float>(SDL_GetTicks()) / 1000.0f;
     const float scaleFactor = m_sineWaveAmplitude * sin(twoPi * m_sineWaveFrequency * timeInSeconds + m_sineWavePhase) + m_sineWaveOffsetY;
 
