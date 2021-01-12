@@ -22,3 +22,6 @@ Level3 = 30pts on hit
 
 If you manage to hit any invader that is completely blocked by other invaders (e.g you hit an invader in the middle)
 you will get the double amount of points offered by that invader.
+
+The defenders projectile can collide with the invaders projectiles. You can use this knowledge to protect yourself for any invaders
+incoming projectile.
