@@ -20,6 +20,7 @@ void Projectile::Draw() {
     m_rect.render(RenderFlag::Fill);
 }
 
+//Sets the projectiles point with the provided X pos and the default y pos 750
 void Projectile::SetXPos(float pos) noexcept {
     m_rect.SetPoint({pos, 750});
 }
