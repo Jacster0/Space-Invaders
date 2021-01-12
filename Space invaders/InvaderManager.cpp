@@ -96,7 +96,7 @@ std::optional<int> InvaderManager::Move(float speedFactor) {
 
     if (m_numberOfInvadersAlive == 1) {
         m_limit = 20ms;
-        //If there is only one aline left, reduce the step in Y led to make it a little bit
+        //If there is only one alien left, reduce the step in Y led to make it a little bit
         //easier for the player.
         m_stepY = 25;
     }
