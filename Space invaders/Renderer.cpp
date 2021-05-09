@@ -32,6 +32,20 @@ void Renderer::DrawLine(const Point2D& start, const Point2D& end)
     SDL_RenderDrawLine(m_rendererSDL, start.x, start.y, end.x, end.y);
 }
 
+void Renderer::DrawLines(const std::vector<Point2D>& points) {
+    SDL_RenderDrawLinesF(
+        m_rendererSDL,
+        reinterpret_cast<const SDL_FPoint*>(points.data()),
+        points.size());
+}
+
+void Renderer::DrawClosedPolygon(const std::vector<Point2D>& points) {
+    //Draw some connected lines to form the polygon
+    this->DrawLines(points);
+    //Connect the first point with the last so that we get a closed polygon
+    this->DrawLine(points.front(), points.back());
+}
+
 void Renderer::FillShape(CallBack fillCB) {
     fillCB();
 }

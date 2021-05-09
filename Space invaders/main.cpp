@@ -10,6 +10,10 @@
 
 int main(int argc, char** argv) {
     try {
+#ifdef _WIN32
+        auto handle = GetConsoleWindow();
+        ShowWindow(handle, SW_HIDE);
+#endif
         return Game{}.Run();
     }
     catch (const std::exception& e) {

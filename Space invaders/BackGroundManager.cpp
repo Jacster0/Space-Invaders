@@ -11,26 +11,19 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     m_renderer(renderer),
     m_numDefenderLives(numLives)
 {
-    auto xPos = 30.0f;
-   
-    for (int i = 0; i < m_numDefenderLives; i++) {
+    for (int i = 0, xPos = 30; i < m_numDefenderLives; i++, xPos += 60) {
         m_defenderLives.push_back(std::make_unique<Rectangle>(
-            Point2D(xPos,m_yPos), 
+            Point2D(xPos, m_yPos), 
             255, 0, 0, 255, 
             m_width, m_height,
             m_renderer));
-        xPos += 60;
     }
 
     //Initialize the ttf engine
     TTF_Init();
 
     //create highscore and score textures
-    SDL_Rect rect;
-    rect.w = 400;
-    rect.h = 100;
-    rect.x = 110;
-    rect.y = 0;
+    SDL_Rect rect{ 110 ,0, 400, 100};
 
     m_font = TTF_OpenFont(R"(Resources\Fonts\arial.ttf)", 46);
 
@@ -42,6 +35,7 @@ BackGroundScreenManager::BackGroundScreenManager(const std::shared_ptr<Renderer>
     //Create player life texture
     m_playerLivesTexture = IMG_LoadTexture(m_renderer->GetSDLRenderer(), R"(Resources\Textures\Defender.png)");
 
+    //Create the starfield
     CreateStarField();
 }
 
@@ -74,12 +68,11 @@ void BackGroundScreenManager::Show() {
 
     auto playerHighScoreValueTexture = CreateTextTexture(std::to_string(m_playerHighscore));
     CopyTextureToRenderer(playerHighScoreValueTexture, 80, 50, 350, 0);
+    SDL_DestroyTexture(playerHighScoreValueTexture);
 
     auto playerScoreValueTexture = CreateTextTexture(std::to_string(m_playerScore));
     CopyTextureToRenderer(playerScoreValueTexture, 80, 50, 110, 0);
-
     SDL_DestroyTexture(playerScoreValueTexture);
-    SDL_DestroyTexture(playerHighScoreValueTexture);
 }
 
 int BackGroundScreenManager::ShowGameOverDisplay() {
@@ -96,7 +89,13 @@ int BackGroundScreenManager::ShowGameOverDisplay() {
 
 void BackGroundScreenManager::HandleGameOverUserInput() {
     SDL_Event sdlEvent;
-    while (SDL_PollEvent(&sdlEvent)) {}
+
+    while (SDL_PollEvent(&sdlEvent)) {
+        if (sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE) {
+            m_gameOverReturnCode = ReturnCode::Quit;
+            return;
+        }
+    }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
@@ -132,6 +131,7 @@ void BackGroundScreenManager::CreateStarField() {
     std::uniform_int_distribution<int>    outerCircleRadius(16, 22);
     std::uniform_real_distribution<float> starXPos(5, 770);
     std::uniform_real_distribution<float> starYPos(100, 150);
+    std::uniform_real_distribution<float> blinkFreq(0.25f, 2.0f);
     std::uniform_int_distribution<int>    numFlares(4, 11);
 
     const auto numStars = numStarsDist(rng);
@@ -142,6 +142,7 @@ void BackGroundScreenManager::CreateStarField() {
             innerCircleRadius(rng),
             outerCircleRadius(rng),
             numFlares(rng),
+            blinkFreq(rng),
             m_renderer
             ));
     }
@@ -200,6 +201,7 @@ void BackGroundScreenManager::ScaleStarField() {
 
     for (int i = 0; i < m_starField.size(); i++) {
         if (Star* star = dynamic_cast<Star*>(m_starField.at(i).get())) {
+            const float scaleFactor = m_sineWaveAmplitude * sin(twoPi * star->GetBlinkFrequency() * timeInSeconds + m_sineWavePhase) + m_sineWaveOffsetY;
             star->SetScale(1.0f * scaleFactor);
             star->Scale(m_originalStars.at(i));
         }
@@ -208,12 +210,8 @@ void BackGroundScreenManager::ScaleStarField() {
 
 //Copies the texture to the renderer
 void BackGroundScreenManager::CopyTextureToRenderer(SDL_Texture* texture, int width, int height, int xPos, int yPos) {
-    SDL_Rect rect;
-    rect.x = xPos;
-    rect.y = yPos;
-    rect.w = width;
-    rect.h = height;
-
+    SDL_Rect rect{xPos, yPos, width, height};
+    
     SDL_RenderCopy(m_renderer->GetSDLRenderer(), texture, nullptr, &rect);
 }
 
@@ -222,7 +220,7 @@ SDL_Texture* BackGroundScreenManager::CreateTextTexture(const std::string& text,
     SDL_Color textColor = { r,g,b };
 
     auto surf = TTF_RenderText_Solid(m_font, text.c_str(), { 255,255,255 });
-    auto texture = SDL_CreateTextureFromSurface(m_renderer->GetSDLRenderer(), surf);
+    auto texture    = SDL_CreateTextureFromSurface(m_renderer->GetSDLRenderer(), surf);
 
     //destroy the surface since we have no further use of it
     SDL_FreeSurface(surf);

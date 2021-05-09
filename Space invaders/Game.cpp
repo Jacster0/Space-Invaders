@@ -12,10 +12,10 @@ Game::Game() {
     //init the SDL2_Image library
     IMG_Init(IMG_INIT_PNG);
 
-    Window* wnd = Window::Create();
-    wnd->Show();
+    Window& wnd = Window::Create();
+    wnd.Show();
 
-    m_renderer = std::make_shared<Renderer>(*wnd,0, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    m_renderer = std::make_shared<Renderer>(wnd,0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     m_renderer->SetColor(0, 0, 0, 255);
     m_renderer->Clear();
 
@@ -29,7 +29,6 @@ Game::Game() {
 }
 
 Game::~Game() {
-    Window::Destroy();
     SDL_Quit();
 }
 
@@ -124,10 +123,14 @@ void Game::Render() {
     m_backgroundManager->Show();
 
     m_defender->Draw();
+
     if (m_defender->GetProjectileIsLaunched()) {
         m_defender->GetProjectile()->Draw();
     }
+
     m_invManger->Show();
+
+    //Present the rendered image to the screen
     m_renderer->Present();
 }
 
@@ -148,7 +151,7 @@ void Game::Restart(bool playerWon) {
 
 void Game::DrawGround() {
     m_renderer->SetColor(0, 255, 0, 255);
-    SDL_RenderDrawLine(m_renderer->GetSDLRenderer(), 0, 782, Window::GetWidth(), 782);
+    m_renderer->DrawLine({ 0,782 }, { static_cast<float>(Window::GetWidth()), 782 });
 }
 
 void Game::CheckCollision() {

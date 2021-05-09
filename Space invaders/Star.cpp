@@ -3,8 +3,9 @@
 #include "SDL.h"
 #include <numbers>
 
-Star::Star(Point2D point, int innerRadius, int outerRadius, int flares, const std::shared_ptr<Renderer>& renderer)
+Star::Star(Point2D point, int innerRadius, int outerRadius, int flares, float blinkFrequncy, const std::shared_ptr<Renderer>& renderer)
     :
+    m_blinkFrequncy(blinkFrequncy),
     m_renderer(renderer),
     Shape(point, 255,255,0,255)
 {
@@ -13,7 +14,7 @@ Star::Star(Point2D point, int innerRadius, int outerRadius, int flares, const st
 
     const auto numPoints = flares * 2;
     //since we know that the numbers of points is just flares * 2 we can
-    //we can call points.reserver with that number 
+    //we can call points.reserve with that number 
     m_points.reserve(numPoints);
 
     constexpr float pi = std::numbers::pi_v<float>;
@@ -46,14 +47,8 @@ void Star::render(RenderFlags renderFlags) {
         point.y += Shape::GetPoint().y;
     }
 
-    //Draw some connected lines to form the star
-    SDL_RenderDrawLinesF(
-        m_renderer->GetSDLRenderer(), 
-        reinterpret_cast<SDL_FPoint*>(m_points.data()), 
-        m_points.size());
-    
-    //Connect the first point with the last so that we get a "closed" star
-    m_renderer->DrawLine(m_points.front(), m_points.back());
+    //Draw the star as a closed polygon
+    m_renderer->DrawClosedPolygon(m_points);
 
     //Transform back to object space
     for (auto& point : m_points) {

@@ -149,7 +149,7 @@ std::optional<int> InvaderManager::Move(float speedFactor) {
 
                 if (invader->GetPoint().y + invader->GetRectangle().GetHeight() >= m_groundLevel) {
                     //an invader has hit the ground and succesfully invaded the planet
-                    //just return an arbitrary value to indicate that this even has occure.
+                    //just return an arbitrary value to indicate that this event has occured.
                     return 1;
                 }
             }
@@ -244,7 +244,6 @@ int InvaderManager::KillInvaderAtPosition(int xPos, int yPos) {
         auto& invaderAbove = m_invaders.at(abovePos).at(xPos);
         freeInvaders.push_back(invaderAbove);
     }
-
     return score;
 }
 
@@ -271,7 +270,7 @@ void InvaderManager::Shoot() {
         invader->Shoot();
         
         m_canShoot = false;
-        //retrieve the actual invader that made the shot 
+        //retrieve the actual invader that made the shot and mark him as dirty
         m_dirtyInvader = invader;
     }
 }
